@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Admin - Absen Sumpay</title>
+    <link href="../../assets/css/output.css" rel="stylesheet" />
+  </head>
+
+  <body class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div class="w-full max-w-md">
+      <!-- Logo / App Name -->
+      <div class="flex flex-col items-center mb-8">
+        <img
+          src="../../assets/images/logo sumpay.edu.png"
+          alt="Logo Absen Sumpay"
+          class="w-36 object-contain"
+        />
+        <!-- <h1 class="mt-4 text-2xl font-semibold text-gray-800">SUMPAY.Edu</h1> -->
+      </div>
+
+      <!-- Card -->
+      <div class="bg-white shadow-lg rounded-2xl p-8">
+        <form id="loginForm" class="space-y-5">
+          <div class="text-center">
+            <h1 class="text-2xl font-semibold text-gray-800">Log in</h1>
+          </div>
+
+          <!-- Identifier -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              NIP
+            </label>
+            <input
+              type="text"
+              name="identifier"
+              required
+              class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#C3D9E6] focus:border-[#C3D9E6] transition"
+              placeholder="Masukkan NIP"
+            />
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              required
+              class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#C3D9E6] focus:border-[#C3D9E6] transition"
+              placeholder="Masukkan password"
+            />
+          </div>
+
+          <!-- Error Message -->
+          <div id="errorMessage" class="hidden text-sm text-red-500">
+            Login gagal. Periksa kembali data Anda.
+          </div>
+
+          <!-- Button -->
+          <button
+            type="submit"
+            class="w-full bg-[#C3D9E6] hover:brightness-95 text-gray-800 font-medium py-2.5 rounded-xl transition duration-200 shadow-sm"
+          >
+            Masuk
+          </button>
+        </form>
+      </div>
+
+      <!-- Footer kecil -->
+      <p class="text-center text-xs text-gray-400 mt-6">© 2026 Absen Sumpay</p>
+    </div>
+
+    <script type="module" src="../../js/login.js"></script>
+  </body>
+</html>

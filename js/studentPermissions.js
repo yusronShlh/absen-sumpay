@@ -1,0 +1,334 @@
+import { getData, putData } from "./core/api.js";
+
+/* ==============================
+   DOM ELEMENTS
+============================== */
+const permissionListEl = document.getElementById("todayPermissionList");
+const filterContainer = document.getElementById("permissionFilter");
+const permissionCountEl = document.getElementById("permissionCount");
+
+const detailModal = document.getElementById("permissionDetailModal");
+const detailContent = document.getElementById("detailContent");
+const closeDetailModalBtn = document.getElementById("closeDetailModal");
+
+/* ==============================
+   STATE
+============================== */
+let permissions = [];
+let currentFilter = "all";
+
+/* ==============================
+   INIT
+============================== */
+document.addEventListener("DOMContentLoaded", () => {
+  loadPermissions();
+  initFilter();
+  initModal();
+});
+
+/* ==============================
+   FETCH DATA
+============================== */
+async function loadPermissions() {
+  try {
+    permissionListEl.innerHTML = `
+      <div class="text-sm text-gray-400 italic">
+        Memuat data...
+      </div>
+    `;
+
+    const response = await getData("api/admin/student-permissions");
+    permissions = (response.data || []).sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    );
+
+    Swal.close();
+    renderPermissions();
+  } catch (error) {
+    Swal.close();
+    showError(error.message);
+  }
+}
+
+/* ==============================
+   RENDER
+============================== */
+function renderPermissions() {
+  permissionListEl.innerHTML = "";
+
+  const filtered = getFilteredPermissions();
+  permissionCountEl.textContent = `${filtered.length} Izin`;
+
+  if (filtered.length === 0) {
+    permissionListEl.innerHTML = `
+      <div class="text-sm text-gray-400 italic">
+        Tidak ada data izin
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach((item) => {
+    const card = document.createElement("div");
+    card.className = `
+  bg-white/90 
+  backdrop-blur-sm
+  p-5 
+  rounded-2xl 
+  shadow-sm 
+  hover:shadow-md 
+  transition-all 
+  duration-300 
+  space-y-3
+`;
+    card.innerHTML = `
+      <div class="flex justify-between items-start">
+        <div>
+          <h4 class="font-semibold text-[#1E3A5F]">
+            ${item.Student?.User?.name || "-"}
+          </h4>
+          <p class="text-xs text-gray-400">
+            Kelas ${item.Class?.name || "-"} • ${formatDate(item.date)}
+          </p>
+        </div>
+
+        ${renderStatusBadge(item.status)}
+      </div>
+
+      <p class="text-sm text-gray-600 line-clamp-2">
+        ${item.letter}
+      </p>
+
+      <div class="flex gap-2 pt-2 flex-wrap">
+        <button 
+          class="detail-btn 
+text-xs 
+px-3 py-1.5 
+rounded-lg 
+bg-[#1E3A5F]/10 
+text-[#1E3A5F] 
+hover:bg-[#1E3A5F] 
+hover:text-white 
+transition-all 
+duration-200"
+          data-id="${item.id}"
+        >
+          Detail
+        </button>
+
+        ${
+          item.status === "pending"
+            ? `
+          <button 
+            class="approve-btn text-xs px-3 py-1 rounded-lg bg-green-500 text-white hover:bg-green-600 transition"
+            data-id="${item.id}"
+          >
+            Setujui
+          </button>
+
+          <button 
+            class="reject-btn text-xs px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+            data-id="${item.id}"
+          >
+            Tolak
+          </button>
+        `
+            : ""
+        }
+      </div>
+    `;
+
+    permissionListEl.appendChild(card);
+  });
+
+  attachActionEvents();
+}
+
+/* ==============================
+   FILTER
+============================== */
+function initFilter() {
+  filterContainer.addEventListener("click", (e) => {
+    if (!e.target.classList.contains("filter-btn")) return;
+
+    document
+      .querySelectorAll(".filter-btn")
+      .forEach((btn) => btn.classList.remove("bg-[#1E3A5F]", "text-white"));
+
+    e.target.classList.add("bg-[#1E3A5F]", "text-white");
+
+    currentFilter = e.target.dataset.filter;
+    renderPermissions();
+  });
+}
+
+function getFilteredPermissions() {
+  if (currentFilter === "all") return permissions;
+
+  return permissions.filter((item) => item.status === currentFilter);
+}
+
+/* ==============================
+   ACTION EVENTS
+============================== */
+function attachActionEvents() {
+  document.querySelectorAll(".detail-btn").forEach((btn) => {
+    btn.addEventListener("click", () => openDetail(btn.dataset.id));
+  });
+
+  document.querySelectorAll(".approve-btn").forEach((btn) => {
+    btn.addEventListener("click", () => handleApprove(btn.dataset.id));
+  });
+
+  document.querySelectorAll(".reject-btn").forEach((btn) => {
+    btn.addEventListener("click", () => handleReject(btn.dataset.id));
+  });
+}
+
+/* ==============================
+   DETAIL MODAL
+============================== */
+async function openDetail(id) {
+  try {
+    showLoading();
+
+    const data = await getData(`api/admin/student-permissions/${id}`);
+
+    Swal.close();
+
+    detailContent.innerHTML = `
+      <div>
+        <strong>Nama:</strong> ${data.Student?.User?.name}
+      </div>
+      <div>
+        <strong>NISN:</strong> ${data.Student?.User?.nisn}
+      </div>
+      <div>
+        <strong>Kelas:</strong> ${data.Class?.name}
+      </div>
+      <div>
+        <strong>Tanggal:</strong> ${formatDate(data.date)}
+      </div>
+      <div>
+        <strong>Alasan:</strong> ${data.reason}
+      </div>
+      <div class="pt-2">
+        <strong>Isi Surat:</strong>
+        <p class="mt-1 text-gray-600">${data.letter}</p>
+      </div>
+    `;
+
+    detailModal.showModal();
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+function initModal() {
+  closeDetailModalBtn.addEventListener("click", () => {
+    detailModal.close();
+  });
+}
+
+/* ==============================
+   APPROVE / REJECT
+============================== */
+async function handleApprove(id) {
+  const confirm = await Swal.fire({
+    title: "Setujui izin?",
+    text: "Izin akan disetujui.",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Ya, Setujui",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    showLoading();
+
+    const res = await putData(
+      `api/admin/student-permissions/${id}/approve`,
+      {},
+    );
+
+    Swal.fire("Berhasil", res.message, "success");
+
+    await loadPermissions();
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+async function handleReject(id) {
+  const confirm = await Swal.fire({
+    title: "Tolak izin?",
+    text: "Izin akan ditolak.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Ya, Tolak",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    showLoading();
+
+    const res = await putData(`api/admin/student-permissions/${id}/reject`, {});
+
+    Swal.fire("Berhasil", res.message, "success");
+
+    await loadPermissions();
+  } catch (error) {
+    showError(error.message);
+  }
+}
+
+/* ==============================
+   UTILITIES
+============================== */
+function renderStatusBadge(status) {
+  const config = {
+    pending: "bg-yellow-100 text-yellow-600",
+    approved: "bg-green-100 text-green-600",
+    rejected: "bg-red-100 text-red-600",
+  };
+
+  return `
+    <span class="text-xs px-2 py-1 rounded-full ${
+      config[status] || "bg-gray-100 text-gray-600"
+    }">
+      ${capitalize(status)}
+    </span>
+  `;
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/* ==============================
+   ALERT HELPERS
+============================== */
+function showLoading() {
+  Swal.fire({
+    title: "Memuat...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+}
+
+function showError(message) {
+  Swal.fire("Error", message, "error");
+}

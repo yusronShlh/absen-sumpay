@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin</title>
+    <link href="../../assets/css/output.css" rel="stylesheet" />
+  </head>
+
+  <body class="bg-slate-50 overflow-hidden">
+    <div class="flex h-screen">
+      <!-- OVERLAY (mobile) -->
+      <div
+        id="overlay"
+        class="fixed inset-0 bg-black/40 hidden z-40 md:hidden"
+        onclick="toggleSidebar()"
+      ></div>
+
+      <!-- SIDEBAR -->
+      <aside
+        id="sidebar"
+        class="fixed md:static top-0 left-0 h-screen md:h-auto md:min-h-full overflow-y-auto z-50 w-64 bg-[#C3D9E6] text-[#1E3A5F] p-6 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
+      >
+        <div class="mb-10 text-center">
+          <img
+            src="../../assets/images/logo sumpay.edu.png"
+            class="w-27 mx-auto mt-4"
+          />
+          <!-- <h1 class="text-xl font-bold text-slate-800 mt-3">SUMPAY.Edu</h1> -->
+        </div>
+
+        <nav class="space-y-2 text-sm font-medium">
+          <a href="#" class="block px-4 py-2 rounded-lg bg-white shadow">
+            Dashboard
+          </a>
+
+          <a
+            href="./students.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Data Siswa
+          </a>
+
+          <a
+            href="./teachers.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Data Guru
+          </a>
+
+          <a
+            href="./classes.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Kelas
+          </a>
+
+          <a
+            href="./subject.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Mapel
+          </a>
+
+          <a
+            href="./lessonTime.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Jam Mapel
+          </a>
+
+          <a
+            href="./schedule.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Jadwal
+          </a>
+
+          <a
+            href="./studentsPermissions.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Approve Izin Siswa
+          </a>
+
+          <a
+            href="./teacherPermissions.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Approve Izin Guru
+          </a>
+
+          <a
+            href="#"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Cetak Laporan
+          </a>
+        </nav>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <div class="flex-1 w-full overflow-y-auto">
+        <!-- MOBILE TOP NAV -->
+        <div
+          class="md:hidden flex justify-between items-center bg-[#C3D9E6] p-4"
+        >
+          <h2 class="font-bold text-[#1E3A5F]">SUMPAY.Edu</h2>
+          <button onclick="toggleSidebar()" class="text-2xl text-[#1E3A5F]">
+            ☰
+          </button>
+        </div>
+
+        <div class="p-6 md:p-8">
+          <!-- TOP HEADER (desktop) -->
+          <div class="mb-8 hidden md:block">
+            <h2 class="text-3xl font-bold text-[#1E3A5F]">Dashboard</h2>
+            <p class="text-gray-500 text-sm">Ringkasan data sistem absensi</p>
+          </div>
+
+          <!-- SUMMARY CARDS -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
+            <div
+              class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+            >
+              <p class="text-gray-400 text-sm">Total Siswa</p>
+              <h3
+                id="totalStudents"
+                class="text-3xl font-bold text-slate-800 mt-2"
+              >
+                0
+              </h3>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+            >
+              <p class="text-gray-400 text-sm">Laki-laki</p>
+              <h3
+                id="maleStudents"
+                class="text-3xl font-bold text-slate-800 mt-2"
+              >
+                0
+              </h3>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+            >
+              <p class="text-gray-400 text-sm">Perempuan</p>
+              <h3
+                id="femaleStudents"
+                class="text-3xl font-bold text-slate-800 mt-2"
+              >
+                0
+              </h3>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
+            >
+              <p class="text-gray-400 text-sm">Total Guru</p>
+              <h3
+                id="totalTeachers"
+                class="text-3xl font-bold text-slate-800 mt-2"
+              >
+                0
+              </h3>
+            </div>
+          </div>
+
+          <!-- IZIN HARI INI -->
+          <div class="grid grid-cols-2 gap-4 md:gap-6 mb-10">
+            <div class="bg-[#C3D9E6] p-6 rounded-xl">
+              <p class="text-slate-700 text-sm">Izin Siswa Hari Ini</p>
+              <h3
+                id="todayStudentPermits"
+                class="text-2xl font-bold text-slate-800 mt-2"
+              >
+                0
+              </h3>
+            </div>
+
+            <div class="bg-[#C3D9E6] p-6 rounded-xl">
+              <p class="text-slate-700 text-sm">Izin Guru Hari Ini</p>
+              <h3
+                id="todayTeacherPermits"
+                class="text-2xl font-bold text-slate-800 mt-2"
+              >
+                0
+              </h3>
+            </div>
+          </div>
+
+          <!-- CHART -->
+          <div
+            class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
+          >
+            <h3 class="text-lg font-semibold text-[#1E3A5F] mb-6">
+              Statistik Siswa Per Kelas
+            </h3>
+
+            <div class="h-80">
+              <canvas id="classChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        sidebar.classList.toggle("-translate-x-full");
+        overlay.classList.toggle("hidden");
+      }
+    </script>
+    <script src="../../node_modules/chart.js/dist/chart.umd.js"></script>
+    <script type="module" src="../../js/dashboard.js"></script>
+  </body>
+</html>

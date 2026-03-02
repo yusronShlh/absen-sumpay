@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelola Mata Pelajaran</title>
+    <link href="../../assets/css/output.css" rel="stylesheet" />
+  </head>
+
+  <body class="bg-slate-50 overflow-hidden">
+    <div class="flex h-screen">
+      <!-- OVERLAY (mobile) -->
+      <div
+        id="overlay"
+        class="fixed inset-0 bg-black/40 hidden z-40 md:hidden"
+        onclick="toggleSidebar()"
+      ></div>
+
+      <aside
+        id="sidebar"
+        class="fixed md:static top-0 left-0 h-screen md:h-auto md:min-h-full overflow-y-auto z-50 w-64 bg-[#C3D9E6] text-[#1E3A5F] p-6 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
+      >
+        <div class="mb-10 text-center">
+          <img
+            src="../../assets/images/logo sumpay.edu.png"
+            class="w-27 mx-auto mt-4"
+          />
+          <!-- <h1 class="text-xl font-bold text-slate-800 mt-3">SUMPAY.Edu</h1> -->
+        </div>
+
+        <nav class="space-y-2 text-sm font-medium">
+          <a
+            href="./dashboard.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Dashboard
+          </a>
+
+          <a
+            href="./students.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Data Siswa
+          </a>
+
+          <a
+            href="./teachers.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Data Guru
+          </a>
+
+          <a
+            href="./classes.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Kelas
+          </a>
+
+          <a
+            href="./subject.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Mapel
+          </a>
+
+          <a
+            href="./lessonTime.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Jam Mapel
+          </a>
+
+          <a
+            href="./schedule.html"
+            class="block px-4 py-2 rounded-lg bg-white shadow"
+          >
+            Kelola Jadwal
+          </a>
+
+          <a
+            href="./studentsPermissions.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Approve Izin Siswa
+          </a>
+
+          <a
+            href="./teacherPermissions.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Approve Izin Guru
+          </a>
+
+          <a
+            href="#"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Cetak Laporan
+          </a>
+        </nav>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <div class="flex-1 w-full overflow-y-auto">
+        <!-- MOBILE TOP NAV -->
+        <div
+          class="md:hidden flex justify-between items-center bg-[#C3D9E6] p-4"
+        >
+          <h2 class="font-bold text-[#1E3A5F]">SUMPAY.Edu</h2>
+          <button onclick="toggleSidebar()" class="text-2xl text-[#1E3A5F]">
+            ☰
+          </button>
+        </div>
+        <div class="p-6 md:p-8">
+          <!-- HEADER -->
+          <div>
+            <h2 class="text-3xl font-bold text-[#1E3A5F]">Kelola Jadwal</h2>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8 mt-6"
+          >
+            <!-- Filter Kelas -->
+            <div class="w-full md:w-auto">
+              <!-- <label class="block font-medium text-gray-600">
+                Filter Kelas
+              </label> -->
+
+              <select
+                id="filterKelas"
+                class="w-full md:w-54 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Semua Kelas</option>
+                <!-- <option value="1A">Kelas 1A</option>
+                <option value="1B">Kelas 1B</option>
+                <option value="2A">Kelas 2A</option> -->
+              </select>
+            </div>
+
+            <!-- <button
+              id="btnAddSchedule"
+              class="w-full md:w-auto bg-[#1E3A5F] text-white px-5 py-2.5 rounded-xl shadow hover:opacity-90 transition flex items-center justify-center gap-2"
+            >
+              <span class="text-lg">＋</span>
+              Tambah Jadwal
+            </button> -->
+          </div>
+
+          <!-- INFO KELAS -->
+          <div
+            id="classInfo"
+            class="mb-10 p-4 bg-white rounded-xl shadow-sm border border-gray-100 hidden"
+          >
+            <div
+              class="flex flex-col md:flex-row md:justify-between gap-2 text-sm"
+            >
+              <div>
+                <span class="font-semibold text-[#1E3A5F]">Kelas:</span>
+                <span id="infoNamaKelas">-</span>
+              </div>
+              <div>
+                <span class="font-semibold text-[#1E3A5F]">Wali Kelas:</span>
+                <span id="infoWaliKelas">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD TABLE -->
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+          >
+            <!-- TABLE WRAPPER -->
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm text-left">
+                <thead class="bg-[#C3D9E6]/40 text-[#1E3A5F]">
+                  <tr>
+                    <th class="px-4 py-4 w-16">No</th>
+                    <th class="px-6 py-4 min-w-[160px] text-left">Jam</th>
+                    <th class="px-6 py-4 min-w-[140px]">Senin</th>
+                    <th class="px-6 py-4 min-w-[140px]">Selasa</th>
+                    <th class="px-6 py-4 min-w-[140px]">Rabu</th>
+                    <th class="px-6 py-4 min-w-[140px]">Kamis</th>
+                    <th class="px-6 py-4 min-w-[140px]">Jum'at</th>
+                    <th class="px-6 py-4 min-w-[140px]">Sabtu</th>
+                    <th class="px-6 py-4 min-w-[140px]">Minggu</th>
+                  </tr>
+                </thead>
+
+                <tbody id="scheduleTableBody" class="divide-y divide-gray-100">
+                  <!-- DATA DINAMIS DARI JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR SCRIPT -->
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+        sidebar.classList.toggle("-translate-x-full");
+        overlay.classList.toggle("hidden");
+      }
+    </script>
+
+    <!-- SWEETALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- icon -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+
+    <!-- sembunyikan info jadwal -->
+    <!-- <script>
+      document.getElementById("classInfo").classList.remove("hidden");
+      document.getElementById("infoNamaKelas").textContent = selectedClass.name;
+      document.getElementById("infoWaliKelas").textContent =
+        selectedClass.homeroom_teacher;
+    </script> -->
+
+    <!-- Moodal dialog -->
+    <dialog
+      id="scheduleModal"
+      class="rounded-2xl p-0 w-[420px] max-w-[95%] backdrop:bg-black/40 backdrop:backdrop-blur-sm m-auto fixed inset-0 open:animate-in open:fade-in open:zoom-in-95"
+    >
+      <form method="dialog" id="scheduleForm" class="flex flex-col gap-4 p-6">
+        <!-- Title -->
+        <h3
+          id="modalTitle"
+          class="text-xl font-semibold text-gray-800 text-center"
+        >
+          Tambah Jadwal
+        </h3>
+
+        <!-- Hari -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-600">Hari</label>
+          <select
+            id="daySelect"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          ></select>
+        </div>
+
+        <!-- Kelas -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-600">Kelas</label>
+          <select
+            id="classSelect"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          ></select>
+        </div>
+
+        <!-- Mapel -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-600">Mapel</label>
+          <select
+            id="subjectSelect"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          ></select>
+        </div>
+
+        <!-- Guru -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-600">Guru</label>
+          <select
+            id="teacherSelect"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          ></select>
+        </div>
+
+        <!-- Jam -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-600">Jam</label>
+          <select
+            id="lessonTimeSelect"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          ></select>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 mt-4">
+          <button
+            type="button"
+            id="btnCloseModal"
+            class="px-4 py-2 text-sm rounded-lg bg-gray-200 hover:bg-gray-300 transition"
+          >
+            Batal
+          </button>
+
+          <button
+            type="button"
+            id="btnDelete"
+            class="hidden px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+          >
+            Hapus
+          </button>
+
+          <button
+            type="submit"
+            class="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            Simpan
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <!-- JS MODULE -->
+    <script type="module" src="../../js/schedule.js"></script>
+  </body>
+</html>
