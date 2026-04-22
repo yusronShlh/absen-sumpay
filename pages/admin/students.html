@@ -83,6 +83,13 @@
           </a>
 
           <a
+            href="./adminAttendance.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Absen Siswa
+          </a>
+
+          <a
             href="./studentsPermissions.html"
             class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
           >
@@ -96,12 +103,40 @@
             Approve Izin Guru
           </a>
 
-          <a
-            href="#"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Cetak Laporan
-          </a>
+          <div class="rounded-lg overflow-hidden">
+            <button
+              id="reportMenuBtn"
+              type="button"
+              class="w-full flex items-center justify-between px-4 py-2 rounded-lg hover:bg-white/70 transition"
+            >
+              <span>Cetak Laporan</span>
+
+              <i
+                id="reportChevron"
+                data-lucide="chevron-right"
+                class="w-4 h-4 transition-transform duration-300"
+              ></i>
+            </button>
+
+            <div
+              id="reportSubmenu"
+              class="max-h-0 overflow-hidden transition-all duration-300 ml-4 space-y-2"
+            >
+              <a
+                href="./teacherAttendanceReport.html"
+                class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+              >
+                Laporan Absensi Guru
+              </a>
+
+              <a
+                href="./studentAttendanceReport.html"
+                class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+              >
+                Laporan Absensi Siswa
+              </a>
+            </div>
+          </div>
         </nav>
       </aside>
 
@@ -189,9 +224,28 @@
       function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");
         const overlay = document.getElementById("overlay");
+
         sidebar.classList.toggle("-translate-x-full");
         overlay.classList.toggle("hidden");
       }
+
+      const reportBtn = document.getElementById("reportMenuBtn");
+      const reportSubmenu = document.getElementById("reportSubmenu");
+      const reportChevron = document.getElementById("reportChevron");
+
+      reportBtn.addEventListener("click", function () {
+        if (reportSubmenu.classList.contains("max-h-0")) {
+          reportSubmenu.classList.remove("max-h-0");
+          reportSubmenu.classList.add("max-h-40");
+
+          reportChevron.classList.add("rotate-90");
+        } else {
+          reportSubmenu.classList.add("max-h-0");
+          reportSubmenu.classList.remove("max-h-40");
+
+          reportChevron.classList.remove("rotate-90");
+        }
+      });
     </script>
 
     <!-- SWEETALERT -->

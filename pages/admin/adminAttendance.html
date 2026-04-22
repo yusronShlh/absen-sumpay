@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Admin</title>
+    <title>Absensi siswa</title>
     <link href="../../assets/css/output.css" rel="stylesheet" />
   </head>
 
@@ -16,7 +16,6 @@
         onclick="toggleSidebar()"
       ></div>
 
-      <!-- SIDEBAR -->
       <aside
         id="sidebar"
         class="fixed md:static top-0 left-0 h-screen md:h-auto md:min-h-full overflow-y-auto z-50 w-64 bg-[#C3D9E6] text-[#1E3A5F] p-6 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
@@ -30,7 +29,10 @@
         </div>
 
         <nav class="space-y-2 text-sm font-medium">
-          <a href="#" class="block px-4 py-2 rounded-lg bg-white shadow">
+          <a
+            href="./dashboard.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
             Dashboard
           </a>
 
@@ -75,6 +77,7 @@
           >
             Kelola Jadwal
           </a>
+
           <a
             href="./attendanceMonitoring.html"
             class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
@@ -84,7 +87,7 @@
 
           <a
             href="./adminAttendance.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+            class="block px-4 py-2 rounded-lg bg-white shadow"
           >
             Absen Siswa
           </a>
@@ -151,104 +154,100 @@
             ☰
           </button>
         </div>
-
         <div class="p-6 md:p-8">
-          <!-- TOP HEADER (desktop) -->
-          <div class="mb-8 hidden md:block">
-            <h2 class="text-3xl font-bold text-[#1E3A5F]">Dashboard</h2>
-            <p class="text-gray-500 text-sm">Ringkasan data sistem absensi</p>
+          <!-- HEADER -->
+          <div>
+            <h2 class="text-3xl font-bold text-[#1E3A5F]">Absen Siswa</h2>
           </div>
 
-          <!-- SUMMARY CARDS -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
-            <div
-              class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-            >
-              <p class="text-gray-400 text-sm">Total Siswa</p>
-              <h3
-                id="totalStudents"
-                class="text-3xl font-bold text-slate-800 mt-2"
-              >
-                0
-              </h3>
-            </div>
-
-            <div
-              class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-            >
-              <p class="text-gray-400 text-sm">Laki-laki</p>
-              <h3
-                id="maleStudents"
-                class="text-3xl font-bold text-slate-800 mt-2"
-              >
-                0
-              </h3>
-            </div>
-
-            <div
-              class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-            >
-              <p class="text-gray-400 text-sm">Perempuan</p>
-              <h3
-                id="femaleStudents"
-                class="text-3xl font-bold text-slate-800 mt-2"
-              >
-                0
-              </h3>
-            </div>
-
-            <div
-              class="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-            >
-              <p class="text-gray-400 text-sm">Total Guru</p>
-              <h3
-                id="totalTeachers"
-                class="text-3xl font-bold text-slate-800 mt-2"
-              >
-                0
-              </h3>
-            </div>
-          </div>
-
-          <!-- IZIN HARI INI -->
-          <div class="grid grid-cols-2 gap-4 md:gap-6 mb-10">
-            <div class="bg-[#C3D9E6] p-6 rounded-xl">
-              <p class="text-slate-700 text-sm">Izin Siswa Hari Ini</p>
-              <h3
-                id="todayStudentPermits"
-                class="text-2xl font-bold text-slate-800 mt-2"
-              >
-                0
-              </h3>
-            </div>
-
-            <div class="bg-[#C3D9E6] p-6 rounded-xl">
-              <p class="text-slate-700 text-sm">Izin Guru Hari Ini</p>
-              <h3
-                id="todayTeacherPermits"
-                class="text-2xl font-bold text-slate-800 mt-2"
-              >
-                0
-              </h3>
-            </div>
-          </div>
-
-          <!-- CHART -->
           <div
-            class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
+            class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8 mt-6"
           >
-            <h3 class="text-lg font-semibold text-[#1E3A5F] mb-6">
-              Statistik Siswa Per Kelas
-            </h3>
+            <!-- Filter Kelas -->
+            <div class="w-full md:w-auto">
+              <label class="block text-sm font-semibold text-slate-600 mb-2">
+                Pilih Tanggal
+              </label>
 
-            <div class="h-80">
-              <canvas id="classChart"></canvas>
+              <div class="relative">
+                <input
+                  type="date"
+                  id="filterTanggal"
+                  class="w-full md:w-56 pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl shadow-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                />
+              </div>
+            </div>
+
+            <!-- Filter Kelas -->
+            <div class="w-full md:w-auto">
+              <label class="block text-sm font-semibold text-slate-600 mb-2">
+                Pilih Kelas
+              </label>
+
+              <select
+                id="filterKelas"
+                class="w-full md:w-54 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">1 IPS</option>
+                <!-- <option value="1A">Kelas 1A</option>
+                <option value="1B">Kelas 1B</option>
+                <option value="2A">Kelas 2A</option> -->
+              </select>
+            </div>
+
+            <!-- pilih jadwal yang ingin di tampilkan dari kelas yang sudah di pilih -->
+            <div class="w-full md:w-auto">
+              <label class="block text-sm font-semibold text-slate-600 mb-2">
+                Pilih jadwal/mapel
+              </label>
+
+              <select
+                id="filterMapel"
+                class="w-full md:w-54 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Matematika</option>
+                <!-- <option value="1A">Kelas 1A</option>
+                <option value="1B">Kelas 1B</option>
+                <option value="2A">Kelas 2A</option> -->
+              </select>
+            </div>
+          </div>
+
+          <!-- CARD TABLE -->
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+          >
+            <!-- TABLE WRAPPER -->
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm text-left">
+                <thead class="bg-[#C3D9E6]/40 text-[#1E3A5F]">
+                  <tr>
+                    <th
+                      class="px-4 py-3 text-center border-r border-gray-200 w-16"
+                    >
+                      No
+                    </th>
+                    <th class="px-6 py-3 text-center border-r border-gray-200">
+                      Nama
+                    </th>
+                    <th class="px-6 py-3 text-center">Keterangan</th>
+                  </tr>
+                </thead>
+
+                <tbody
+                  id="AdminAttendanceTableBody"
+                  class="divide-y divide-gray-100"
+                >
+                  <!-- DATA DINAMIS DARI JS -->
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- SIDEBAR SCRIPT -->
     <script>
       function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");
@@ -276,7 +275,17 @@
         }
       });
     </script>
-    <script src="../../node_modules/chart.js/dist/chart.umd.js"></script>
-    <script type="module" src="../../js/dashboard.js"></script>
+
+    <!-- SWEETALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- icon -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+
+    <!-- JS MODULE -->
+    <script type="module" src="../../js/adminAttendance.js"></script>
   </body>
 </html>
