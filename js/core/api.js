@@ -19,7 +19,7 @@ export async function getData(endpoint) {
 
   if (response.status === 401) {
     localStorage.removeItem("token");
-    window.location.href = "/login.html";
+    window.location.href = "../../../login.html";
     return;
   }
 
@@ -40,7 +40,7 @@ export async function postData(endpoint, data) {
   const result = await response.json();
   if (response.status === 401) {
     localStorage.removeItem("token");
-    window.location.href = "/login.html";
+    window.location.href = "../../../login.html";
     return;
   }
 
