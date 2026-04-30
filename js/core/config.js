@@ -1,1 +1,1 @@
-export const BASE_URL = "http://100.105.63.68:4000/";
+export const BASE_URL = "https://api.auroranova.my.id/";
