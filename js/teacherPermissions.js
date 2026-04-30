@@ -29,7 +29,7 @@ async function init() {
 }
 
 /* ===============================
-   FETCH ALL PERMISSIONS
+   FETCH
 ================================ */
 async function fetchPermissions() {
   try {
@@ -39,7 +39,6 @@ async function fetchPermissions() {
 
     permissions = response.data || [];
 
-    // Sort terbaru di atas
     permissions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     renderPermissions();
@@ -72,18 +71,13 @@ function renderPermissions() {
   }
 
   filtered.forEach((item) => {
+    const dateRange = formatDateRange(item.start_date, item.end_date);
+
     const card = document.createElement("div");
     card.className = `
-  bg-white/90 
-  backdrop-blur-sm
-  p-5 
-  rounded-2xl 
-  shadow-sm 
-  hover:shadow-md 
-  transition-all 
-  duration-300 
-  space-y-3
-`;
+      bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-sm 
+      hover:shadow-md transition-all duration-300 space-y-3
+    `;
 
     card.innerHTML = `
       <div class="flex justify-between items-start">
@@ -92,7 +86,7 @@ function renderPermissions() {
             ${item.teacher?.name || "-"}
           </h4>
           <p class="text-xs text-gray-400">
-            NIP ${item.teacher?.nip || "-"} • ${formatDate(item.date)}
+            NIP ${item.teacher?.nip || "-"} • ${dateRange}
           </p>
         </div>
 
@@ -100,21 +94,18 @@ function renderPermissions() {
       </div>
 
       <p class="text-sm text-gray-600 line-clamp-2">
-        ${item.letter}
+        ${
+          item.reason
+            ? item.reason
+            : "<span class='italic text-gray-400'>Tidak ada surat</span>"
+        }
       </p>
 
       <div class="flex gap-2 pt-2 flex-wrap">
         <button 
-          class="detail-btn 
-text-xs 
-px-3 py-1.5 
-rounded-lg 
-bg-[#1E3A5F]/10 
-text-[#1E3A5F] 
-hover:bg-[#1E3A5F] 
-hover:text-white 
-transition-all 
-duration-200"
+          class="detail-btn text-xs px-3 py-1.5 rounded-lg 
+          bg-[#1E3A5F]/10 text-[#1E3A5F] 
+          hover:bg-[#1E3A5F] hover:text-white transition"
           data-id="${item.id}"
         >
           Detail
@@ -166,7 +157,7 @@ function attachCardEvents() {
 }
 
 /* ===============================
-   APPROVE
+   APPROVE / REJECT
 ================================ */
 async function handleApprove(e) {
   const id = e.target.closest("[data-id]").dataset.id;
@@ -191,9 +182,6 @@ async function handleApprove(e) {
   }
 }
 
-/* ===============================
-   REJECT
-================================ */
 async function handleReject(e) {
   const id = e.target.closest("[data-id]").dataset.id;
 
@@ -218,7 +206,7 @@ async function handleReject(e) {
 }
 
 /* ===============================
-   UPDATE LOCAL STATE
+   UPDATE STATE
 ================================ */
 function updateLocalStatus(id, newStatus) {
   const index = permissions.findIndex((p) => p.id == id);
@@ -237,13 +225,47 @@ async function handleDetail(e) {
   try {
     const data = await getData(`api/admin/teacher-permissions/${id}`);
 
+    const dateRange = formatDateRange(data.start_date, data.end_date);
+
     detailContent.innerHTML = `
-      <p><strong>Nama:</strong> ${data.teacher.name}</p>
-      <p><strong>NIP:</strong> ${data.teacher.nip}</p>
-      <p><strong>Tanggal:</strong> ${formatDate(data.date)}</p>
-      <p><strong>Alasan:</strong> ${data.reason}</p>
-      <p><strong>Surat:</strong> ${data.letter}</p>
-      <p><strong>Status:</strong> ${data.status}</p>
+      <p><strong>Nama:</strong> ${data.teacher?.name || "-"}</p>
+      <p><strong>NIP:</strong> ${data.teacher?.nip || "-"}</p>
+      <p><strong>Tanggal:</strong> ${dateRange}</p>
+      <p><strong>Alasan:</strong> ${data.reason || "-"}</p>
+      
+      <div>
+    <p><strong>File pendukung:</strong></p>
+    ${
+      data.letter
+        ? `<img 
+            src="${data.letter}" 
+            alt="Bukti surat" 
+            class="mt-2 max-h-60 rounded-lg border shadow-sm object-contain"
+          />`
+        : `<span class="italic text-gray-400">Tidak ada file pendukung</span>`
+    }
+  </div>
+
+      <div class="mt-3">
+        <p class="font-semibold mb-1">Jadwal Terdampak:</p>
+        <ul class="list-disc ml-5 text-sm">
+          ${
+            data.details?.length
+              ? data.details
+                  .map(
+                    (d) => `
+              <li>
+                ${d.Schedule?.Subject?.name || "-"} 
+                (${d.Schedule?.LessonTime?.start_time || "-"} - 
+                ${d.Schedule?.LessonTime?.end_time || "-"})
+              </li>
+            `,
+                  )
+                  .join("")
+              : "<li>-</li>"
+          }
+        </ul>
+      </div>
     `;
 
     detailModal.showModal();
@@ -282,12 +304,23 @@ function setupFilter() {
    UTILITIES
 ================================ */
 function formatDate(dateString) {
+  if (!dateString) return "-";
   const date = new Date(dateString);
   return date.toLocaleDateString("id-ID", {
     day: "2-digit",
     month: "long",
     year: "numeric",
   });
+}
+
+function formatDateRange(start, end) {
+  if (!start) return "-";
+
+  if (start === end) {
+    return formatDate(start);
+  }
+
+  return `${formatDate(start)} - ${formatDate(end)}`;
 }
 
 function renderStatusBadge(status) {

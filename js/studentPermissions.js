@@ -38,14 +38,13 @@ async function loadPermissions() {
     `;
 
     const response = await getData("api/admin/student-permissions");
+
     permissions = (response.data || []).sort(
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
     );
 
-    Swal.close();
     renderPermissions();
   } catch (error) {
-    Swal.close();
     showError(error.message);
   }
 }
@@ -71,16 +70,10 @@ function renderPermissions() {
   filtered.forEach((item) => {
     const card = document.createElement("div");
     card.className = `
-  bg-white/90 
-  backdrop-blur-sm
-  p-5 
-  rounded-2xl 
-  shadow-sm 
-  hover:shadow-md 
-  transition-all 
-  duration-300 
-  space-y-3
-`;
+      bg-white/90 backdrop-blur-sm p-5 rounded-2xl 
+      shadow-sm hover:shadow-md transition-all duration-300 space-y-3
+    `;
+
     card.innerHTML = `
       <div class="flex justify-between items-start">
         <div>
@@ -88,7 +81,8 @@ function renderPermissions() {
             ${item.Student?.User?.name || "-"}
           </h4>
           <p class="text-xs text-gray-400">
-            Kelas ${item.Class?.name || "-"} • ${formatDate(item.date)}
+            Kelas ${item.Student?.Class?.name || "-"} • 
+            ${formatDate(item.start_date)}
           </p>
         </div>
 
@@ -96,21 +90,14 @@ function renderPermissions() {
       </div>
 
       <p class="text-sm text-gray-600 line-clamp-2">
-        ${item.letter}
+        ${item.reason || "-"}
       </p>
 
       <div class="flex gap-2 pt-2 flex-wrap">
         <button 
-          class="detail-btn 
-text-xs 
-px-3 py-1.5 
-rounded-lg 
-bg-[#1E3A5F]/10 
-text-[#1E3A5F] 
-hover:bg-[#1E3A5F] 
-hover:text-white 
-transition-all 
-duration-200"
+          class="detail-btn text-xs px-3 py-1.5 rounded-lg 
+          bg-[#1E3A5F]/10 text-[#1E3A5F] 
+          hover:bg-[#1E3A5F] hover:text-white transition"
           data-id="${item.id}"
         >
           Detail
@@ -120,14 +107,16 @@ duration-200"
           item.status === "pending"
             ? `
           <button 
-            class="approve-btn text-xs px-3 py-1 rounded-lg bg-green-500 text-white hover:bg-green-600 transition"
+            class="approve-btn text-xs px-3 py-1 rounded-lg 
+            bg-green-500 text-white hover:bg-green-600 transition"
             data-id="${item.id}"
           >
             Setujui
           </button>
 
           <button 
-            class="reject-btn text-xs px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+            class="reject-btn text-xs px-3 py-1 rounded-lg 
+            bg-red-500 text-white hover:bg-red-600 transition"
             data-id="${item.id}"
           >
             Tolak
@@ -149,22 +138,22 @@ duration-200"
 ============================== */
 function initFilter() {
   filterContainer.addEventListener("click", (e) => {
-    if (!e.target.classList.contains("filter-btn")) return;
+    const btn = e.target.closest(".filter-btn");
+    if (!btn) return;
 
     document
       .querySelectorAll(".filter-btn")
-      .forEach((btn) => btn.classList.remove("bg-[#1E3A5F]", "text-white"));
+      .forEach((b) => b.classList.remove("bg-[#1E3A5F]", "text-white"));
 
-    e.target.classList.add("bg-[#1E3A5F]", "text-white");
+    btn.classList.add("bg-[#1E3A5F]", "text-white");
 
-    currentFilter = e.target.dataset.filter;
+    currentFilter = btn.dataset.filter;
     renderPermissions();
   });
 }
 
 function getFilteredPermissions() {
   if (currentFilter === "all") return permissions;
-
   return permissions.filter((item) => item.status === currentFilter);
 }
 
@@ -194,36 +183,40 @@ async function openDetail(id) {
 
     const data = await getData(`api/admin/student-permissions/${id}`);
 
-    Swal.close();
-
     detailContent.innerHTML = `
+      <div><strong>Nama:</strong> ${data.Student?.User?.name || "-"}</div>
+      <div><strong>NISN:</strong> ${data.Student?.User?.nisn || "-"}</div>
+      <div><strong>Kelas:</strong> ${data.Student?.Class?.name || "-"}</div>
+      <div><strong>Dari:</strong> ${formatDate(data.start_date)}</div>
+      <div><strong>Sampai:</strong> ${formatDate(data.end_date)}</div>
+      <div><strong>Alasan:</strong> ${data.reason || "-"}</div>
+
       <div>
-        <strong>Nama:</strong> ${data.Student?.User?.name}
-      </div>
-      <div>
-        <strong>NISN:</strong> ${data.Student?.User?.nisn}
-      </div>
-      <div>
-        <strong>Kelas:</strong> ${data.Class?.name}
-      </div>
-      <div>
-        <strong>Tanggal:</strong> ${formatDate(data.date)}
-      </div>
-      <div>
-        <strong>Alasan:</strong> ${data.reason}
-      </div>
-      <div class="pt-2">
-        <strong>Isi Surat:</strong>
-        <p class="mt-1 text-gray-600">${data.letter}</p>
-      </div>
+    <p><strong>File pendukung izin:</strong></p>
+    ${
+      data.proof_file
+        ? `<img 
+            src="${data.proof_file}" 
+            alt="Bukti surat" 
+            class="mt-2 max-h-60 rounded-lg border shadow-sm object-contain"
+          />`
+        : `<span class="italic text-gray-400">Tidak ada file pendukung izin</span>`
+    }
+  </div>
+
+      <div><strong>Status:</strong> ${capitalize(data.status)}</div>
     `;
 
     detailModal.showModal();
+    Swal.close();
   } catch (error) {
     showError(error.message);
   }
 }
 
+/* ==============================
+   MODAL
+============================== */
 function initModal() {
   closeDetailModalBtn.addEventListener("click", () => {
     detailModal.close();
@@ -236,7 +229,6 @@ function initModal() {
 async function handleApprove(id) {
   const confirm = await Swal.fire({
     title: "Setujui izin?",
-    text: "Izin akan disetujui.",
     icon: "question",
     showCancelButton: true,
     confirmButtonText: "Ya, Setujui",
@@ -247,12 +239,9 @@ async function handleApprove(id) {
   try {
     showLoading();
 
-    const res = await putData(
-      `api/admin/student-permissions/${id}/approve`,
-      {},
-    );
+    const res = await putData(`api/admin/student-permissions/${id}/approve`);
 
-    Swal.fire("Berhasil", res.message, "success");
+    Swal.fire("Berhasil", res.message || "Disetujui", "success");
 
     await loadPermissions();
   } catch (error) {
@@ -263,7 +252,6 @@ async function handleApprove(id) {
 async function handleReject(id) {
   const confirm = await Swal.fire({
     title: "Tolak izin?",
-    text: "Izin akan ditolak.",
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "Ya, Tolak",
@@ -274,9 +262,9 @@ async function handleReject(id) {
   try {
     showLoading();
 
-    const res = await putData(`api/admin/student-permissions/${id}/reject`, {});
+    const res = await putData(`api/admin/student-permissions/${id}/reject`);
 
-    Swal.fire("Berhasil", res.message, "success");
+    Swal.fire("Berhasil", res.message || "Ditolak", "success");
 
     await loadPermissions();
   } catch (error) {
@@ -304,28 +292,26 @@ function renderStatusBadge(status) {
 }
 
 function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("id-ID", {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString("id-ID", {
     day: "2-digit",
     month: "long",
     year: "numeric",
   });
 }
 
-function capitalize(text) {
+function capitalize(text = "") {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 /* ==============================
-   ALERT HELPERS
+   ALERT
 ============================== */
 function showLoading() {
   Swal.fire({
     title: "Memuat...",
     allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
+    didOpen: () => Swal.showLoading(),
   });
 }
 

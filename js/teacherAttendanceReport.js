@@ -1,8 +1,9 @@
-import { getData } from "./core/api.js";
+import { getData, downloadFile } from "./core/api.js";
 
 const semesterFilter = document.getElementById("filterPeriode");
 const teacherFilter = document.getElementById("filterGuru");
 const btnTampilkan = document.getElementById("btnTampilkanData");
+const btnExportPDF = document.getElementById("btnExportPDF");
 
 const tableHead = document.querySelector("thead");
 const tableBody = document.getElementById("AdminAttendanceTableBody");
@@ -92,7 +93,7 @@ btnTampilkan.addEventListener("click", async () => {
     Swal.close();
 
     if (teacherFilter.value) {
-      renderDetailGuru(result.data);
+      renderDetailGuru(result.data.data);
     } else {
       renderSummaryGuru(result.data);
     }
@@ -171,3 +172,32 @@ function renderDetailGuru(data) {
     `;
   });
 }
+
+// Download file pdf
+btnExportPDF.addEventListener("click", async () => {
+  if (!semesterFilter.value) {
+    Swal.fire("Warning", "Pilih semester dulu", "warning");
+    return;
+  }
+
+  try {
+    Swal.fire({
+      title: "Mengunduh PDF...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    let endpoint = `api/admin/reports/teacher-attendance/export?semester_id=${semesterFilter.value}`;
+
+    if (teacherFilter.value) {
+      endpoint += `&teacher_id=${teacherFilter.value}`;
+    }
+
+    await downloadFile(endpoint, "laporan-absensi-guru.pdf");
+
+    Swal.close();
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", error.message, "error");
+  }
+});

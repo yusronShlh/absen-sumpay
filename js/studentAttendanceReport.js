@@ -1,8 +1,9 @@
-import { getData } from "./core/api.js";
+import { getData, downloadFile } from "./core/api.js";
 
 const classFilter = document.getElementById("filterKelas");
 const subjectFilter = document.getElementById("filterMapel");
 const btnTampilkan = document.getElementById("btnTampilkanData");
+const btnExportPDF = document.getElementById("btnExportPDF");
 
 const tableHead = document.querySelector("thead");
 const tableBody = document.getElementById("AdminAttendanceTableBody");
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   subjectFilter.innerHTML = `<option value="">Pilih mapel</option>`;
   subjectFilter.disabled = true;
+  return;
 });
 
 // ================= LOAD KELAS =================
@@ -180,3 +182,40 @@ function renderSingleSubject(data) {
     `;
   });
 }
+
+btnExportPDF.addEventListener("click", async () => {
+  if (!classFilter.value) {
+    Swal.fire("Warning", "Pilih kelas dulu", "warning");
+    return;
+  }
+
+  try {
+    Swal.fire({
+      title: "Mengunduh PDF...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    let endpoint = `api/admin/reports/student-attendance/export?class_id=${classFilter.value}`;
+
+    if (subjectFilter.value) {
+      endpoint += `&subject_id=${subjectFilter.value}`;
+    }
+
+    const selectedClass = classFilter.options[classFilter.selectedIndex].text;
+
+    const selectedSubject =
+      subjectFilter.options[subjectFilter.selectedIndex]?.text;
+
+    const fileName = subjectFilter.value
+      ? `laporan-${selectedClass}-${selectedSubject}.pdf`
+      : `laporan-${selectedClass}.pdf`;
+
+    await downloadFile(endpoint, fileName);
+
+    Swal.close();
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", error.message, "error");
+  }
+});
