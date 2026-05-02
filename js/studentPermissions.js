@@ -194,9 +194,9 @@ async function openDetail(id) {
       <div>
     <p><strong>File pendukung izin:</strong></p>
     ${
-      data.proof_file
+      data.letter
         ? `<img 
-            src="${data.proof_file}" 
+            src="${data.letter}" 
             alt="Bukti surat" 
             class="mt-2 max-h-60 rounded-lg border shadow-sm object-contain"
           />`
