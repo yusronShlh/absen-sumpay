@@ -1,166 +1,281 @@
-import { getData, postData, putData, deleteData } from "../js/core/api.js";
+import { getData, postData, putData, deleteData } from "./core/api.js";
 
+// ===============================
+// ELEMENT
+// ===============================
 const filterKelas = document.getElementById("filterKelas");
+
 const tableBody = document.getElementById("scheduleTableBody");
+
 const modal = document.getElementById("scheduleModal");
+
 const modalTitle = document.getElementById("modalTitle");
-
-const daySelect = document.getElementById("daySelect");
-const classSelect = document.getElementById("classSelect");
-const subjectSelect = document.getElementById("subjectSelect");
-const teacherSelect = document.getElementById("teacherSelect");
-const lessonTimeSelect = document.getElementById("lessonTimeSelect");
-
-const btnDelete = document.getElementById("btnDelete");
 
 const scheduleForm = document.getElementById("scheduleForm");
 
-let formOptions = null;
-let currentClassId = null;
+const btnDelete = document.getElementById("btnDelete");
 
-/* ===============================
-   INIT
-================================= */
+const btnCloseModal = document.getElementById("btnCloseModal");
+
+// select
+const daySelect = document.getElementById("daySelect");
+
+const teachingAssignmentSelect = document.getElementById(
+  "teachingAssignmentSelect",
+);
+
+const lessonTimeSelect = document.getElementById("lessonTimeSelect");
+
+// info kelas
+const classInfo = document.getElementById("classInfo");
+
+const infoNamaKelas = document.getElementById("infoNamaKelas");
+
+const infoWaliKelas = document.getElementById("infoWaliKelas");
+
+// ===============================
+// STATE
+// ===============================
+let formOptions = {};
+
+let schedules = [];
+
+let currentClassId = "";
+
+let editScheduleId = null;
+
+// ===============================
+// INIT
+// ===============================
 document.addEventListener("DOMContentLoaded", async () => {
   await loadFormOptions();
-  setupFilterListener();
+
+  initEvents();
 });
 
-/* ===============================
-   LOAD FORM OPTIONS
-================================= */
-async function loadFormOptions() {
-  try {
-    const res = await getData("api/admin/schedules/form-options");
-    formOptions = res;
-
-    renderClassDropdown(formOptions.classes);
-
-    if (formOptions.classes.length > 0) {
-      currentClassId = formOptions.classes[0].id;
-      filterKelas.value = currentClassId;
-      await loadSchedulesByClass(currentClassId);
-    }
-  } catch (err) {
-    Swal.fire({
-      icon: "error",
-      title: "Gagal",
-      text: err.message || "Terjadi kesalahan",
-    });
-  }
-}
-
-/* ===============================
-   RENDER DROPDOWN
-================================= */
-function renderClassDropdown(classes) {
-  filterKelas.innerHTML = "";
-
-  classes.forEach((cls) => {
-    const option = document.createElement("option");
-    option.value = cls.id;
-    option.textContent = `Kelas ${cls.name}`;
-    filterKelas.appendChild(option);
-  });
-}
-
-/* ===============================
-   FILTER CHANGE
-================================= */
-function setupFilterListener() {
+// ===============================
+// EVENTS
+// ===============================
+function initEvents() {
   filterKelas.addEventListener("change", async (e) => {
     currentClassId = e.target.value;
+
+    if (!currentClassId) {
+      tableBody.innerHTML = "";
+
+      classInfo.classList.add("hidden");
+
+      return;
+    }
+
     await loadSchedulesByClass(currentClassId);
+  });
+
+  scheduleForm.addEventListener("submit", handleSubmit);
+
+  btnDelete.addEventListener("click", handleDelete);
+
+  btnCloseModal.addEventListener("click", () => {
+    modal.close();
   });
 }
 
-/* ===============================
-   LOAD SCHEDULE BY CLASS
-================================= */
-async function loadSchedulesByClass(classId) {
+// ===============================
+// LOAD FORM OPTIONS
+// ===============================
+async function loadFormOptions() {
   try {
-    const res = await getData(`api/admin/schedules?class_id=${classId}`);
-    renderTable(res.data);
-  } catch (err) {
+    const response = await getData("api/admin/schedules/form-options");
+
+    formOptions = response;
+
+    populateFilterClass();
+
+    populateModalSelects();
+
+    // default pilih kelas pertama
+    const firstClass = formOptions.teachingAssignments?.[0]?.Class;
+
+    if (firstClass) {
+      currentClassId = firstClass.id;
+
+      filterKelas.value = firstClass.id;
+
+      await loadSchedulesByClass(firstClass.id);
+    }
+  } catch (error) {
+    console.error(error);
+
     Swal.fire({
       icon: "error",
       title: "Gagal",
-      text: err.message || "Terjadi kesalahan",
+      text: error.message,
     });
   }
 }
 
-function renderTable(schedules) {
+// ===============================
+// FILTER KELAS
+// ===============================
+function populateFilterClass() {
+  filterKelas.innerHTML = `
+    <option value="">Pilih Kelas</option>
+  `;
+
+  // ambil unique classes dari teaching assignments
+  const uniqueClasses = [];
+
+  formOptions.teachingAssignments.forEach((item) => {
+    const exists = uniqueClasses.find((cls) => cls.id === item.Class.id);
+
+    if (!exists) {
+      uniqueClasses.push(item.Class);
+    }
+  });
+
+  uniqueClasses.forEach((kelas) => {
+    filterKelas.innerHTML += `
+      <option value="${kelas.id}">
+        ${kelas.name}
+      </option>
+    `;
+  });
+}
+
+// ===============================
+// LOAD SCHEDULES
+// ===============================
+async function loadSchedulesByClass(classId) {
+  try {
+    const response = await getData(`api/admin/schedules?class_id=${classId}`);
+
+    schedules = response.data || [];
+
+    renderClassInfo();
+
+    renderTable();
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Gagal",
+      text: error.message,
+    });
+  }
+}
+
+// ===============================
+// RENDER CLASS INFO
+// ===============================
+function renderClassInfo() {
+  const schedule = schedules[0];
+
+  if (!schedule) {
+    classInfo.classList.add("hidden");
+    return;
+  }
+
+  const kelas = schedule.TeachingAssignment?.Class;
+
+  classInfo.classList.remove("hidden");
+
+  infoNamaKelas.textContent = kelas?.name || "-";
+
+  infoWaliKelas.textContent = kelas?.homeroom_teacher_id || "-";
+}
+
+// ===============================
+// RENDER TABLE
+// ===============================
+function renderTable() {
   tableBody.innerHTML = "";
 
-  const days = formOptions.days;
+  const days = formOptions.days || [];
 
-  // ✅ SORT berdasarkan field "order"
-  const lessonTimes = [...formOptions.lessonTimes].sort(
-    (a, b) => a.order - b.order,
+  const lessonTimes = [...(formOptions.lessonTimes || [])].sort(
+    (a, b) => a.id - b.id,
   );
 
   lessonTimes.forEach((lessonTime, index) => {
     const row = document.createElement("tr");
 
-    // ✅ Zebra + tinggi row
     row.className = index % 2 === 0 ? "h-16 bg-white" : "h-16 bg-[#C3D9E6]/20";
 
-    // ==============================
-    // Kolom No
-    // ==============================
-    const noCell = document.createElement("td");
-    noCell.className = "px-4 py-4 align-middle";
-    noCell.textContent = index + 1;
-    row.appendChild(noCell);
+    // no
+    row.innerHTML += `
+      <td class="px-4 py-4">
+        ${index + 1}
+      </td>
+    `;
 
-    // ==============================
-    // Kolom Jam
-    // ==============================
-    const timeCell = document.createElement("td");
-    timeCell.className = "px-6 py-4 align-middle font-medium text-gray-700";
-    timeCell.textContent = lessonTime.name;
-    row.appendChild(timeCell);
+    // jam
+    row.innerHTML += `
+      <td class="px-6 py-4 font-medium text-gray-700">
+        ${lessonTime.name}
+        <br>
+        <span class="text-xs text-gray-400">
+          ${lessonTime.time}
+        </span>
+      </td>
+    `;
 
-    // ==============================
-    // Kolom per Hari
-    // ==============================
+    // hari
     days.forEach((day) => {
-      const cell = document.createElement("td");
-
-      cell.className =
-        "px-6 py-4 align-middle text-center cursor-pointer transition hover:bg-[#C3D9E6]/40";
-
-      cell.dataset.day = day;
-      cell.dataset.lessonTimeId = lessonTime.id;
-      cell.dataset.classId = currentClassId;
-
       const found = schedules.find(
-        (s) => s.day === day && s.lesson_time_id === lessonTime.id,
+        (item) => item.day === day && item.lesson_time_id === lessonTime.id,
       );
 
-      if (found) {
-        const subject = found.Subject?.name ?? "-";
-        const teacher = found.teacher?.name ?? "-";
-        cell.textContent = `${subject} - ${teacher}`;
+      let content = "+";
 
-        cell.dataset.scheduleId = found.id;
-        cell.dataset.subjectId = found.subject_id;
-        cell.dataset.teacherId = found.teacher_id;
-      } else {
-        cell.textContent = "+";
+      let dataset = `
+        data-day="${day}"
+        data-lesson-time-id="${lessonTime.id}"
+      `;
+
+      if (found) {
+        const assignment = found.TeachingAssignment;
+
+        const subject = assignment?.Subject?.name || "-";
+
+        const teacher = assignment?.teacher?.name || "-";
+
+        content = `
+          <div class="text-sm font-medium">
+            ${subject}
+          </div>
+
+          <div class="text-xs text-gray-500 mt-1">
+            ${teacher}
+          </div>
+        `;
+
+        dataset += `
+          data-schedule-id="${found.id}"
+          data-teaching-assignment-id="${found.teaching_assignment_id}"
+        `;
       }
 
-      row.appendChild(cell);
+      row.innerHTML += `
+        <td
+          class="px-4 py-4 text-center align-middle cursor-pointer hover:bg-[#C3D9E6]/40 transition"
+          ${dataset}
+        >
+          ${content}
+        </td>
+      `;
     });
 
     tableBody.appendChild(row);
   });
 }
 
-// EVENT CLIK DI TABLE
+// ===============================
+// TABLE CLICK
+// ===============================
 tableBody.addEventListener("click", (e) => {
   const cell = e.target.closest("td");
+
   if (!cell || !cell.dataset.day) return;
 
   const scheduleId = cell.dataset.scheduleId;
@@ -172,168 +287,189 @@ tableBody.addEventListener("click", (e) => {
   }
 });
 
-let editScheduleId = null;
-
+// ===============================
+// OPEN MODAL
+// ===============================
 function openModal(mode, data) {
+  resetForm();
+
   populateModalSelects();
+
+  // default
+  daySelect.value = data.day;
+
+  lessonTimeSelect.value = data.lessonTimeId;
 
   if (mode === "add") {
     modalTitle.textContent = "Tambah Jadwal";
-    editScheduleId = null;
-    btnDelete.classList.add("hidden");
 
-    daySelect.value = data.day;
-    classSelect.value = data.classId;
-    lessonTimeSelect.value = data.lessonTimeId;
+    editScheduleId = null;
+
+    btnDelete.classList.add("hidden");
   }
 
   if (mode === "edit") {
     modalTitle.textContent = "Edit Jadwal";
+
     editScheduleId = data.scheduleId;
+
     btnDelete.classList.remove("hidden");
 
-    daySelect.value = data.day;
-    classSelect.value = data.classId;
-    lessonTimeSelect.value = data.lessonTimeId;
-
-    subjectSelect.value = data.subjectId; // ✅ TAMBAHAN
-    teacherSelect.value = data.teacherId; // ✅ TAMBAHAN
+    teachingAssignmentSelect.value = data.teachingAssignmentId;
   }
 
   modal.showModal();
 }
 
-document.getElementById("btnCloseModal")?.addEventListener("click", () => {
-  document.getElementById("scheduleModal").close();
-});
-
-// isi semua select
+// ===============================
+// POPULATE MODAL SELECT
+// ===============================
 function populateModalSelects() {
-  // Days
+  // DAYS
   daySelect.innerHTML = "";
+
   formOptions.days.forEach((day) => {
-    const opt = document.createElement("option");
-    opt.value = day;
-    opt.textContent = day;
-    daySelect.appendChild(opt);
+    daySelect.innerHTML += `
+      <option value="${day}">
+        ${capitalize(day)}
+      </option>
+    `;
   });
 
-  // Classes
-  classSelect.innerHTML = "";
-  formOptions.classes.forEach((cls) => {
-    const opt = document.createElement("option");
-    opt.value = cls.id;
-    opt.textContent = `Kelas ${cls.name}`;
-    classSelect.appendChild(opt);
+  // TEACHING ASSIGNMENT
+  teachingAssignmentSelect.innerHTML = "";
+
+  // filter berdasarkan kelas aktif
+  const filteredAssignments = formOptions.teachingAssignments.filter(
+    (item) => item.class_id == currentClassId,
+  );
+
+  filteredAssignments.forEach((item) => {
+    teachingAssignmentSelect.innerHTML += `
+      <option value="${item.id}">
+        ${item.Class?.name} •
+        ${item.Subject?.name} •
+        ${item.teacher?.name}
+      </option>
+    `;
   });
 
-  // Subjects
-  subjectSelect.innerHTML = "";
-  formOptions.subjects.forEach((sub) => {
-    const opt = document.createElement("option");
-    opt.value = sub.id;
-    opt.textContent = sub.name;
-    subjectSelect.appendChild(opt);
-  });
-
-  // Teachers
-  teacherSelect.innerHTML = "";
-  formOptions.teachers.forEach((t) => {
-    const opt = document.createElement("option");
-    opt.value = t.id;
-    opt.textContent = t.name;
-    teacherSelect.appendChild(opt);
-  });
-
-  // LessonTimes
+  // LESSON TIMES
   lessonTimeSelect.innerHTML = "";
-  formOptions.lessonTimes.forEach((lt) => {
-    const opt = document.createElement("option");
-    opt.value = lt.id;
-    opt.textContent = `${lt.name} (${lt.time})`;
-    lessonTimeSelect.appendChild(opt);
+
+  formOptions.lessonTimes.forEach((item) => {
+    lessonTimeSelect.innerHTML += `
+      <option value="${item.id}">
+        ${item.name} (${item.time})
+      </option>
+    `;
   });
 }
 
-// SUBMIT POST DAN PUT
-scheduleForm.addEventListener("submit", async (e) => {
+// ===============================
+// SUBMIT
+// ===============================
+async function handleSubmit(e) {
   e.preventDefault();
 
   const payload = {
     day: daySelect.value,
-    class_id: Number(classSelect.value),
-    subject_id: Number(subjectSelect.value),
-    teacher_id: Number(teacherSelect.value),
+    teaching_assignment_id: Number(teachingAssignmentSelect.value),
     lesson_time_id: Number(lessonTimeSelect.value),
   };
 
   try {
+    // edit
     if (editScheduleId) {
-      console.log("UPDATE ID:", editScheduleId);
-      console.log("PAYLOAD:", payload);
       await putData(`api/admin/schedules/${editScheduleId}`, payload);
-    } else {
-      await postData("api/admin/schedules", payload);
-    }
-
-    modal.close();
-    await loadSchedulesByClass(currentClassId);
-
-    Swal.fire({
-      icon: "success",
-      title: "Berhasil",
-      text: editScheduleId
-        ? "Jadwal berhasil diperbarui"
-        : "Jadwal berhasil ditambahkan",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-  } catch (err) {
-    Swal.fire({
-      icon: "error",
-      title: "Gagal",
-      text: err.message || "Terjadi kesalahan",
-    });
-  }
-});
-
-// Delete
-btnDelete.addEventListener("click", async () => {
-  if (!editScheduleId) return;
-
-  // Tutup modal dulu biar bersih
-  modal.close();
-
-  const confirm = await Swal.fire({
-    title: "Yakin hapus jadwal?",
-    text: "Data tidak bisa dikembalikan.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Ya, hapus!",
-    cancelButtonText: "Batal",
-  });
-
-  if (confirm.isConfirmed) {
-    try {
-      await deleteData(`api/admin/schedules/${editScheduleId}`);
-      await loadSchedulesByClass(currentClassId);
 
       Swal.fire({
         icon: "success",
         title: "Berhasil",
-        text: "Jadwal berhasil dihapus",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Gagal",
-        text: err.message,
+        text: "Jadwal berhasil diperbarui",
       });
     }
-  } else {
-    // Kalau batal, buka lagi modal edit
-    modal.showModal();
+
+    // add
+    else {
+      await postData("api/admin/schedules", payload);
+
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: "Jadwal berhasil ditambahkan",
+      });
+    }
+
+    modal.close();
+
+    await loadSchedulesByClass(currentClassId);
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Gagal",
+      text: error.message,
+    });
   }
-});
+}
+
+// ===============================
+// DELETE
+// ===============================
+async function handleDelete() {
+  if (!editScheduleId) return;
+
+  modal.close();
+
+  const confirm = await Swal.fire({
+    title: "Hapus jadwal?",
+    text: "Data tidak bisa dikembalikan",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Ya, hapus",
+    cancelButtonText: "Batal",
+  });
+
+  if (!confirm.isConfirmed) {
+    modal.showModal();
+    return;
+  }
+
+  try {
+    await deleteData(`api/admin/schedules/${editScheduleId}`);
+
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil",
+      text: "Jadwal berhasil dihapus",
+    });
+
+    await loadSchedulesByClass(currentClassId);
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Gagal",
+      text: error.message,
+    });
+  }
+}
+
+// ===============================
+// RESET FORM
+// ===============================
+function resetForm() {
+  scheduleForm.reset();
+
+  editScheduleId = null;
+}
+
+// ===============================
+// HELPERS
+// ===============================
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

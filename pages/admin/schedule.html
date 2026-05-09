@@ -72,6 +72,13 @@
           </a>
 
           <a
+            href="./teachingAssignment.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Penugasan Guru
+          </a>
+
+          <a
             href="./lessonTime.html"
             class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
           >
@@ -298,7 +305,7 @@
       class="rounded-2xl p-0 w-[420px] max-w-[95%] backdrop:bg-black/40 backdrop:backdrop-blur-sm m-auto fixed inset-0 open:animate-in open:fade-in open:zoom-in-95"
     >
       <form method="dialog" id="scheduleForm" class="flex flex-col gap-4 p-6">
-        <!-- Title -->
+        <!-- TITLE -->
         <h3
           id="modalTitle"
           class="text-xl font-semibold text-gray-800 text-center"
@@ -306,52 +313,46 @@
           Tambah Jadwal
         </h3>
 
-        <!-- Hari -->
+        <!-- HARI -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-600">Hari</label>
+          <label class="text-sm font-medium text-gray-600"> Hari </label>
+
           <select
             id="daySelect"
+            required
             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           ></select>
         </div>
 
-        <!-- Kelas -->
+        <!-- TEACHING ASSIGNMENT -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-600">Kelas</label>
+          <label class="text-sm font-medium text-gray-600">
+            Penugasan Guru
+          </label>
+
           <select
-            id="classSelect"
+            id="teachingAssignmentSelect"
+            required
             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           ></select>
+
+          <p class="text-xs text-gray-400 mt-1">Format: Kelas • Mapel • Guru</p>
         </div>
 
-        <!-- Mapel -->
+        <!-- JAM -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-600">Mapel</label>
-          <select
-            id="subjectSelect"
-            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          ></select>
-        </div>
+          <label class="text-sm font-medium text-gray-600">
+            Jam Pelajaran
+          </label>
 
-        <!-- Guru -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-600">Guru</label>
-          <select
-            id="teacherSelect"
-            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          ></select>
-        </div>
-
-        <!-- Jam -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-600">Jam</label>
           <select
             id="lessonTimeSelect"
+            required
             class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           ></select>
         </div>
 
-        <!-- Actions -->
+        <!-- ACTION -->
         <div class="flex justify-end gap-2 mt-4">
           <button
             type="button"
@@ -371,7 +372,7 @@
 
           <button
             type="submit"
-            class="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+            class="px-4 py-2 text-sm rounded-lg bg-[#1E3A5F] text-white hover:opacity-90 transition"
           >
             Simpan
           </button>
