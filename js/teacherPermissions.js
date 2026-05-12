@@ -255,7 +255,8 @@ async function handleDetail(e) {
                   .map(
                     (d) => `
               <li>
-                ${d.Schedule?.Subject?.name || "-"} 
+                ${d.Schedule?.TeachingAssignment?.Subject?.name || "-"} 
+- ${d.Schedule?.TeachingAssignment?.Class?.name || "-"}
                 (${d.Schedule?.LessonTime?.start_time || "-"} - 
                 ${d.Schedule?.LessonTime?.end_time || "-"})
               </li>

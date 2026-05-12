@@ -392,12 +392,7 @@ async function showDetail(id) {
             </p>
           </div>
 
-          <div>
-            <p class="text-sm text-gray-500 font-medium">Dibuat</p>
-            <p class="text-sm text-slate-600">
-              ${new Date(cls.createdAt).toLocaleString()}
-            </p>
-          </div>
+        
 
           <div>
             <p class="text-sm text-gray-500 font-medium mb-2">Daftar Siswa</p>
