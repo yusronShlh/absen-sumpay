@@ -182,7 +182,7 @@ function renderClassInfo() {
 
   infoNamaKelas.textContent = kelas?.name || "-";
 
-  infoWaliKelas.textContent = kelas?.homeroom_teacher_id || "-";
+  infoWaliKelas.textContent = kelas?.homeroomTeacher?.name || "-";
 }
 
 // ===============================
