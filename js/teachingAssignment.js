@@ -4,27 +4,18 @@ import { getData, postData, putData, deleteData } from "./core/api.js";
 // ELEMENT
 // =========================
 const tableBody = document.getElementById("tableAssignmentBody");
-
 const filterKelas = document.getElementById("filterKelas");
-
+const filterSemester = document.getElementById("filterSemester");
 const btnAddAssignment = document.getElementById("btnAddAssignment");
-
 const assignmentModal = document.getElementById("assignmentModal");
-
 const closeModalBtn = document.getElementById("closeModalBtn");
-
 const cancelModalBtn = document.getElementById("cancelModalBtn");
-
 const assignmentForm = document.getElementById("assignmentForm");
-
 const assignmentId = document.getElementById("assignmentId");
-
 const classSelect = document.getElementById("classSelect");
-
 const subjectSelect = document.getElementById("subjectSelect");
-
+const semesterSelect = document.getElementById("semesterSelect");
 const teacherSelect = document.getElementById("teacherSelect");
-
 const modalTitle = document.getElementById("modalTitle");
 
 // =========================
@@ -36,6 +27,7 @@ let optionsData = {
   classes: [],
   subjects: [],
   teachers: [],
+  semesters: [],
 };
 
 // =========================
@@ -71,6 +63,8 @@ function initEvents() {
 
   // filter kelas
   filterKelas.addEventListener("change", renderTable);
+  // filter semester
+  filterSemester.addEventListener("change", renderTable);
 }
 
 // =========================
@@ -118,20 +112,30 @@ async function loadOptions() {
 function renderTable() {
   tableBody.innerHTML = "";
 
-  let filteredData = assignments;
+  let filteredData = [...assignments];
 
   const selectedClass = filterKelas.value;
+  const selectedSemester = filterSemester.value;
 
-  // filter per kelas
+  // FILTER KELAS
   if (selectedClass) {
-    filteredData = assignments.filter((item) => item.class_id == selectedClass);
+    filteredData = filteredData.filter(
+      (item) => item.class_id == selectedClass,
+    );
   }
 
-  // empty state
+  // FILTER SEMESTER
+  if (selectedSemester) {
+    filteredData = filteredData.filter(
+      (item) => item.semester_id == selectedSemester,
+    );
+  }
+
+  // EMPTY STATE
   if (filteredData.length === 0) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="5" class="text-center py-8 text-gray-500">
+        <td colspan="6" class="text-center py-8 text-gray-500">
           Data penugasan kosong
         </td>
       </tr>
@@ -143,6 +147,7 @@ function renderTable() {
   filteredData.forEach((item, index) => {
     tableBody.innerHTML += `
       <tr class="hover:bg-slate-50 transition">
+        
         <td class="px-3 md:px-6 py-4">
           ${index + 1}
         </td>
@@ -160,8 +165,12 @@ function renderTable() {
         </td>
 
         <td class="px-3 md:px-6 py-4">
+          ${item.Semester?.name || "-"}
+        </td>
+
+        <td class="px-3 md:px-6 py-4 text-center whitespace-nowrap">
           <div class="flex items-center justify-center gap-2">
-            
+
             <button
               class="p-2 rounded-lg hover:bg-blue-50 text-blue-600 btn-edit"
               data-id="${item.id}"
@@ -178,10 +187,15 @@ function renderTable() {
 
           </div>
         </td>
+
       </tr>
     `;
   });
-  if (window.lucide) window.lucide.createIcons();
+
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+
   initActionButtons();
 }
 
@@ -200,6 +214,19 @@ function populateSelectOptions() {
         ${kelas.name}
       </option>
     `;
+  });
+
+  // FILTER SEMESTER
+  filterSemester.innerHTML = `
+  <option value="">Semua Semester</option>
+`;
+
+  optionsData.semesters.forEach((semester) => {
+    filterSemester.innerHTML += `
+    <option value="${semester.id}">
+      ${semester.name}
+    </option>
+  `;
   });
 
   // CLASS SELECT
@@ -239,6 +266,19 @@ function populateSelectOptions() {
         ${teacher.name} (${teacher.nip})
       </option>
     `;
+  });
+
+  // SEMESTER SELECT
+  semesterSelect.innerHTML = `
+  <option value="">-- Pilih Semester --</option>
+`;
+
+  optionsData.semesters.forEach((semester) => {
+    semesterSelect.innerHTML += `
+    <option value="${semester.id}">
+      ${semester.name}
+    </option>
+  `;
   });
 }
 
@@ -281,6 +321,8 @@ function handleEdit(id) {
 
   teacherSelect.value = data.teacher_id;
 
+  semesterSelect.value = data.semester_id;
+
   modalTitle.textContent = "Edit Penugasan";
 
   openModal();
@@ -293,6 +335,7 @@ async function handleSubmit(event) {
     class_id: Number(classSelect.value),
     subject_id: Number(subjectSelect.value),
     teacher_id: Number(teacherSelect.value),
+    semester_id: Number(semesterSelect.value),
   };
 
   try {
@@ -392,4 +435,5 @@ function resetForm() {
   assignmentForm.reset();
 
   assignmentId.value = "";
+  semesterSelect.value = "";
 }
