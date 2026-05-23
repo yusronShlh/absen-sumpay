@@ -205,16 +205,21 @@ function renderTable() {
 function populateSelectOptions() {
   // FILTER KELAS
   filterKelas.innerHTML = `
-    <option value="">Semua Kelas</option>
-  `;
+  <option value="">Semua Kelas</option>
+`;
 
   optionsData.classes.forEach((kelas) => {
     filterKelas.innerHTML += `
-      <option value="${kelas.id}">
-        ${kelas.name}
-      </option>
-    `;
+    <option value="${kelas.id}">
+      ${kelas.name}
+    </option>
+  `;
   });
+
+  // AUTO PILIH KELAS PERTAMA
+  if (optionsData.classes.length > 0) {
+    filterKelas.value = optionsData.classes[0].id;
+  }
 
   // FILTER SEMESTER
   filterSemester.innerHTML = `

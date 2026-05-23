@@ -154,22 +154,24 @@ async function fetchClasses() {
     const response = await getData("api/admin/students/classes");
 
     // Dropdown di modal
-    kelasSelect.innerHTML = `<option value="">Pilih Kelas</option>`;
+    kelasSelect.innerHTML = `
+      <option value="">Pilih Kelas</option>
+    `;
 
     // Dropdown filter
     if (filterKelas) {
-      filterKelas.innerHTML = `<option value="">Semua Kelas</option>`;
+      filterKelas.innerHTML = "";
     }
 
-    response.data.forEach((kelas) => {
-      // Untuk modal
+    response.data.forEach((kelas, index) => {
+      // modal
       kelasSelect.innerHTML += `
         <option value="${kelas.id}">
           Kelas ${kelas.name}
         </option>
       `;
 
-      // Untuk filter
+      // filter
       if (filterKelas) {
         filterKelas.innerHTML += `
           <option value="${kelas.id}">
@@ -177,7 +179,20 @@ async function fetchClasses() {
           </option>
         `;
       }
+
+      // 🔥 auto pilih kelas pertama
+      if (index === 0) {
+        currentFilterClassId = kelas.id;
+      }
     });
+
+    // 🔥 set selected dropdown ke kelas pertama
+    if (filterKelas && currentFilterClassId) {
+      filterKelas.value = currentFilterClassId;
+    }
+
+    // 🔥 langsung fetch siswa sesuai kelas pertama
+    await fetchStudents(currentFilterClassId);
   } catch (error) {
     Swal.fire({
       icon: "error",
@@ -313,5 +328,5 @@ async function handleDelete(e) {
 // =============================
 // INIT
 // =============================
-fetchStudents();
+
 fetchClasses();
