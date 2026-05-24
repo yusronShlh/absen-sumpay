@@ -2,6 +2,9 @@ import { postData } from "./core/api.js";
 
 const form = document.getElementById("loginForm");
 const errorMessage = document.getElementById("errorMessage");
+const passwordInput = document.getElementById("passwordInput");
+const togglePassword = document.getElementById("togglePassword");
+const eyeIcon = document.getElementById("eyeIcon");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -33,3 +36,15 @@ form.addEventListener("submit", async (e) => {
     errorMessage.classList.remove("hidden");
   }
 });
+
+togglePassword.addEventListener("click", () => {
+  const isPassword = passwordInput.type === "password";
+
+  passwordInput.type = isPassword ? "text" : "password";
+
+  eyeIcon.setAttribute("data-lucide", isPassword ? "eye-off" : "eye");
+
+  lucide.createIcons();
+});
+
+lucide.createIcons();
