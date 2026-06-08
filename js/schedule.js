@@ -349,7 +349,8 @@ function populateModalSelects() {
       <option value="${item.id}">
         ${item.Class?.name} •
         ${item.Subject?.name} •
-        ${item.teacher?.name}
+        ${item.teacher?.name} •
+        ${item.Semester?.name} 
       </option>
     `;
   });
