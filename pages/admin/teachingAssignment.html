@@ -72,17 +72,17 @@
           </a>
 
           <a
-            href="./lessonTime.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Kelola Jam Mapel
-          </a>
-
-          <a
             href="./teachingAssignment.html"
             class="block px-4 py-2 rounded-lg bg-white shadow"
           >
             Penugasan Guru
+          </a>
+
+          <a
+            href="./lessonTime.html"
+            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+          >
+            Kelola Jam Mapel
           </a>
 
           <a
@@ -198,18 +198,6 @@
               </select>
             </div>
 
-            <div class="w-full md:w-auto">
-              <select
-                id="filterSemester"
-                class="w-full md:w-54 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Semua Semester</option>
-                <!-- <option value="1A">Kelas 1A</option>
-                <option value="1B">Kelas 1B</option>
-                <option value="2A">Kelas 2A</option> -->
-              </select>
-            </div>
-
             <button
               id="btnAddAssignment"
               class="w-full md:w-auto bg-[#1E3A5F] text-white px-5 py-2.5 rounded-xl shadow hover:opacity-90 transition flex items-center justify-center gap-2"
@@ -232,7 +220,7 @@
                     <th class="px-3 md:px-6 py-3 md:py-4">Mata Pelajaran</th>
                     <th class="px-3 md:px-6 py-3 md:py-4">Kelas</th>
                     <th class="px-3 md:px-6 py-3 md:py-4">Guru</th>
-                    <th class="px-3 md:px-6 py-3 md:py-4">Semester</th>
+                    <!-- <th class="px-3 md:px-6 py-3 md:py-4">Semester</th> -->
                     <th
                       class="px-3 md:px-6 py-3 md:py-4 text-center whitespace-nowrap"
                     >
@@ -361,21 +349,6 @@
               class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">-- Pilih Guru --</option>
-            </select>
-          </div>
-
-          <!-- PILIH SEMESTER -->
-          <div>
-            <label class="block mb-2 text-sm font-medium text-gray-700">
-              Pilih Semester
-            </label>
-
-            <select
-              id="semesterSelect"
-              required
-              class="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">-- Pilih Semester --</option>
             </select>
           </div>
 

@@ -5,7 +5,6 @@ import { getData, postData, putData, deleteData } from "./core/api.js";
 // =========================
 const tableBody = document.getElementById("tableAssignmentBody");
 const filterKelas = document.getElementById("filterKelas");
-const filterSemester = document.getElementById("filterSemester");
 const btnAddAssignment = document.getElementById("btnAddAssignment");
 const assignmentModal = document.getElementById("assignmentModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
@@ -14,7 +13,6 @@ const assignmentForm = document.getElementById("assignmentForm");
 const assignmentId = document.getElementById("assignmentId");
 const classSelect = document.getElementById("classSelect");
 const subjectSelect = document.getElementById("subjectSelect");
-const semesterSelect = document.getElementById("semesterSelect");
 const teacherSelect = document.getElementById("teacherSelect");
 const modalTitle = document.getElementById("modalTitle");
 
@@ -64,7 +62,7 @@ function initEvents() {
   // filter kelas
   filterKelas.addEventListener("change", renderTable);
   // filter semester
-  filterSemester.addEventListener("change", renderTable);
+  // filterSemester.addEventListener("change", renderTable);
 }
 
 // =========================
@@ -115,19 +113,11 @@ function renderTable() {
   let filteredData = [...assignments];
 
   const selectedClass = filterKelas.value;
-  const selectedSemester = filterSemester.value;
 
   // FILTER KELAS
   if (selectedClass) {
     filteredData = filteredData.filter(
       (item) => item.class_id == selectedClass,
-    );
-  }
-
-  // FILTER SEMESTER
-  if (selectedSemester) {
-    filteredData = filteredData.filter(
-      (item) => item.semester_id == selectedSemester,
     );
   }
 
@@ -164,10 +154,7 @@ function renderTable() {
           ${item.teacher?.name || "-"}
         </td>
 
-        <td class="px-3 md:px-6 py-4">
-          ${item.Semester?.name || "-"}
-        </td>
-
+      
         <td class="px-3 md:px-6 py-4 text-center whitespace-nowrap">
           <div class="flex items-center justify-center gap-2">
 
@@ -221,19 +208,6 @@ function populateSelectOptions() {
     filterKelas.value = optionsData.classes[0].id;
   }
 
-  // FILTER SEMESTER
-  filterSemester.innerHTML = `
-  <option value="">Semua Semester</option>
-`;
-
-  optionsData.semesters.forEach((semester) => {
-    filterSemester.innerHTML += `
-    <option value="${semester.id}">
-      ${semester.name}
-    </option>
-  `;
-  });
-
   // CLASS SELECT
   classSelect.innerHTML = `
     <option value="">-- Pilih Kelas --</option>
@@ -271,19 +245,6 @@ function populateSelectOptions() {
         ${teacher.name} (${teacher.nip})
       </option>
     `;
-  });
-
-  // SEMESTER SELECT
-  semesterSelect.innerHTML = `
-  <option value="">-- Pilih Semester --</option>
-`;
-
-  optionsData.semesters.forEach((semester) => {
-    semesterSelect.innerHTML += `
-    <option value="${semester.id}">
-      ${semester.name}
-    </option>
-  `;
   });
 }
 
@@ -326,8 +287,6 @@ function handleEdit(id) {
 
   teacherSelect.value = data.teacher_id;
 
-  semesterSelect.value = data.semester_id;
-
   modalTitle.textContent = "Edit Penugasan";
 
   openModal();
@@ -340,7 +299,6 @@ async function handleSubmit(event) {
     class_id: Number(classSelect.value),
     subject_id: Number(subjectSelect.value),
     teacher_id: Number(teacherSelect.value),
-    semester_id: Number(semesterSelect.value),
   };
 
   try {
@@ -440,5 +398,4 @@ function resetForm() {
   assignmentForm.reset();
 
   assignmentId.value = "";
-  semesterSelect.value = "";
 }
