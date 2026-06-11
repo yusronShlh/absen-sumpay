@@ -10,149 +10,8 @@
   <body class="bg-slate-50 overflow-hidden">
     <div class="flex h-screen">
       <!-- OVERLAY (mobile) -->
-      <div
-        id="overlay"
-        class="fixed inset-0 bg-black/40 hidden z-40 md:hidden"
-        onclick="toggleSidebar()"
-      ></div>
-
-      <aside
-        id="sidebar"
-        class="fixed md:static top-0 left-0 h-screen md:h-auto md:min-h-full overflow-y-auto z-50 w-64 bg-[#C3D9E6] text-[#1E3A5F] p-6 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
-      >
-        <div class="mb-10 text-center">
-          <img
-            src="../../assets/images/logo sumpay.edu.png"
-            class="w-27 mx-auto mt-4"
-          />
-          <!-- <h1 class="text-xl font-bold text-slate-800 mt-3">SUMPAY.Edu</h1> -->
-        </div>
-
-        <nav class="space-y-2 text-sm font-medium">
-          <a
-            href="./dashboard.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Dashboard
-          </a>
-
-          <a
-            href="./semesters.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Kelola Semester
-          </a>
-
-          <a
-            href="./students.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Kelola Data Siswa
-          </a>
-
-          <a href="#" class="block px-4 py-2 rounded-lg bg-white shadow">
-            Kelola Data Guru
-          </a>
-
-          <a
-            href="./classes.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Kelola Kelas
-          </a>
-
-          <a
-            href="./subject.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Kelola Mapel
-          </a>
-
-          <a
-            href="./teachingAssignment.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Penugasan Guru
-          </a>
-
-          <a
-            href="./lessonTime.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Kelola Jam Mapel
-          </a>
-
-          <a
-            href="./schedule.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Kelola Jadwal
-          </a>
-
-          <a
-            href="./attendanceMonitoring.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Monitoring Absen
-          </a>
-
-          <a
-            href="./adminAttendance.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Absen Siswa
-          </a>
-
-          <a
-            href="./studentsPermissions.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Approve Izin Siswa
-          </a>
-
-          <a
-            href="./teacherPermissions.html"
-            class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-          >
-            Approve Izin Guru
-          </a>
-
-          <div class="rounded-lg overflow-hidden">
-            <button
-              id="reportMenuBtn"
-              type="button"
-              class="w-full flex items-center justify-between px-4 py-2 rounded-lg hover:bg-white/70 transition"
-            >
-              <span>Cetak Laporan</span>
-
-              <i
-                id="reportChevron"
-                data-lucide="chevron-right"
-                class="w-4 h-4 transition-transform duration-300"
-              ></i>
-            </button>
-
-            <div
-              id="reportSubmenu"
-              class="max-h-0 overflow-hidden transition-all duration-300 ml-4 space-y-2"
-            >
-              <a
-                href="./teacherAttendanceReport.html"
-                class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-              >
-                Laporan Absensi Guru
-              </a>
-
-              <a
-                href="./studentAttendanceReport.html"
-                class="block px-4 py-2 rounded-lg hover:bg-white/70 transition"
-              >
-                Laporan Absensi Siswa
-              </a>
-            </div>
-          </div>
-        </nav>
-      </aside>
+      <
+      <div id="sidebar-container"></div>
 
       <!-- MAIN CONTENT -->
       <div class="flex-1 w-full overflow-y-auto">
@@ -177,13 +36,31 @@
               <!-- <p class="text-gray-500 text-sm">Manajemen data kelas sekolah</p> -->
             </div>
 
-            <button
-              id="btnAddTeachers"
-              class="self-end md:self-auto bg-[#1E3A5F] text-white px-5 py-2.5 rounded-xl shadow hover:opacity-90 transition flex items-center gap-2"
-            >
-              <span class="text-lg">＋</span>
-              Tambah Guru
-            </button>
+            <div class="flex gap-2">
+              <button
+                id="btnDownloadTemplate"
+                class="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-100 transition-all duration-200"
+              >
+                <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                Template
+              </button>
+
+              <button
+                id="btnImportTeacher"
+                class="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-all duration-200"
+              >
+                <i data-lucide="file-up" class="w-4 h-4"></i>
+                Import Excel
+              </button>
+
+              <button
+                id="btnAddTeachers"
+                class="flex items-center gap-2 bg-[#1E3A5F] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#2a5285] transition-all duration-200 shadow-md active:scale-95"
+              >
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                Tambah Guru
+              </button>
+            </div>
           </div>
 
           <!-- CARD TABLE -->
@@ -213,32 +90,10 @@
     </div>
 
     <!-- SIDEBAR SCRIPT -->
-    <script>
-      function toggleSidebar() {
-        const sidebar = document.getElementById("sidebar");
-        const overlay = document.getElementById("overlay");
+    <script type="module">
+      import { loadSidebar } from "../../js/components/sidebar.js";
 
-        sidebar.classList.toggle("-translate-x-full");
-        overlay.classList.toggle("hidden");
-      }
-
-      const reportBtn = document.getElementById("reportMenuBtn");
-      const reportSubmenu = document.getElementById("reportSubmenu");
-      const reportChevron = document.getElementById("reportChevron");
-
-      reportBtn.addEventListener("click", function () {
-        if (reportSubmenu.classList.contains("max-h-0")) {
-          reportSubmenu.classList.remove("max-h-0");
-          reportSubmenu.classList.add("max-h-40");
-
-          reportChevron.classList.add("rotate-90");
-        } else {
-          reportSubmenu.classList.add("max-h-0");
-          reportSubmenu.classList.remove("max-h-40");
-
-          reportChevron.classList.remove("rotate-90");
-        }
-      });
+      loadSidebar();
     </script>
 
     <!-- SWEETALERT -->
@@ -312,6 +167,34 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- IMPORT MODAL -->
+    <div
+      id="importModal"
+      class="fixed inset-0 hidden items-center justify-center bg-black/40 z-50"
+    >
+      <div class="bg-white rounded-xl p-6 w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Import Data Guru</h3>
+        <input
+          type="file"
+          id="excelFile"
+          accept=".xlsx, .xls"
+          class="border p-2 w-full"
+        />
+        <div class="flex justify-end gap-2 mt-5">
+          <button id="btnCloseImport" class="bg-gray-200 px-4 py-2 rounded">
+            Batal
+          </button>
+
+          <button
+            id="btnSubmitImport"
+            class="bg-[#1E3A5F] text-white px-4 p-2 rounded"
+          >
+            Import
+          </button>
+        </div>
       </div>
     </div>
 

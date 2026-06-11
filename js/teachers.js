@@ -1,4 +1,11 @@
-import { getData, postData, putData, deleteData } from "./core/api.js";
+import {
+  getData,
+  postData,
+  putData,
+  deleteData,
+  downloadFile,
+  uploadFile,
+} from "./core/api.js";
 
 const tableBody = document.getElementById("teacherTableBody");
 const modal = document.getElementById("teacherModal");
@@ -6,6 +13,12 @@ const form = document.getElementById("teacherForm");
 const btnAdd = document.getElementById("btnAddTeachers");
 const btnClose = document.getElementById("btnCloseModal");
 const modalTitle = document.getElementById("modalTitle");
+const btnDownloadTemplate = document.getElementById("btnDownloadTemplate");
+const btnImportTeacher = document.getElementById("btnImportTeacher");
+const importModal = document.getElementById("importModal");
+const btnCloseImport = document.getElementById("btnCloseImport");
+const btnSubmitImport = document.getElementById("btnSubmitImport");
+const excelFile = document.getElementById("excelFile");
 
 let isEditMode = false;
 let currentTeacherId = null;
@@ -175,6 +188,68 @@ form.addEventListener("submit", async (e) => {
     }
 
     closeModal();
+    fetchTeachers();
+  } catch (error) {
+    Swal.fire("Error", error.message, "error");
+  }
+});
+
+// DOWNLOAD TEMPLATE
+btnDownloadTemplate.addEventListener("click", async () => {
+  try {
+    await downloadFile("api/admin/teachers/template", "template-guru.xlsx");
+  } catch (error) {
+    Swal.fire("Error", error.message, "error");
+  }
+});
+
+btnImportTeacher.addEventListener("click", () => {
+  importModal.classList.remove("hidden");
+  importModal.classList.add("flex");
+});
+
+btnCloseImport.addEventListener("click", () => {
+  importModal.classList.add("hidden");
+  importModal.classList.remove("flex");
+});
+
+// IMPORT DATA SISWA
+btnSubmitImport.addEventListener("click", async () => {
+  const file = excelFile.files[0];
+
+  if (!file) {
+    Swal.fire("Error", "Pilih file excel dulu", "error");
+
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  try {
+    const result = await uploadFile("api/admin/teachers/import", formData);
+
+    let message = `
+Total: ${result.total}
+<br>
+Berhasil: ${result.success}
+<br>
+Gagal: ${result.failed}
+`;
+
+    if (result.errors?.length) {
+      message += "<br><br>";
+
+      result.errors.forEach((e) => {
+        message += `Baris ${e.row}: ${e.reason}<br>`;
+      });
+    }
+
+    Swal.fire("Import selesai", message, "success");
+
+    importModal.classList.add("hidden");
+
     fetchTeachers();
   } catch (error) {
     Swal.fire("Error", error.message, "error");

@@ -120,3 +120,25 @@ export async function downloadFile(endpoint, filename = "file.pdf") {
   a.remove();
   window.URL.revokeObjectURL(url);
 }
+
+export async function uploadFile(endpoint, formData) {
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    body: formData,
+  });
+
+  const result = await response.json();
+
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    window.location.href = "/pages/auth/login.html";
+    return;
+  }
+
+  if (!response.ok) {
+    throw new Error(result.message || "Terjadi kesalahan");
+  }
+
+  return result;
+}

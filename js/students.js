@@ -1,7 +1,14 @@
 // =============================
 // IMPORT API
 // =============================
-import { getData, postData, putData, deleteData } from "./core/api.js";
+import {
+  getData,
+  postData,
+  putData,
+  deleteData,
+  downloadFile,
+  uploadFile,
+} from "./core/api.js";
 
 // =============================
 // ELEMENT
@@ -15,7 +22,20 @@ const kelasSelect = document.getElementById("kelas");
 const modalTitle = document.getElementById("modalTitle");
 const studentIdInput = document.getElementById("studentId");
 const filterKelas = document.getElementById("filterKelas");
+const btnDownloadTemplate = document.getElementById("btnDownloadTemplate");
+const btnImportStudent = document.getElementById("btnImportStudent");
+const importModal = document.getElementById("importModal");
+const btnCloseImport = document.getElementById("btnCloseImport");
+const btnSubmitImport = document.getElementById("btnSubmitImport");
+const excelFile = document.getElementById("excelFile");
+const btnPromoteStudent = document.getElementById("btnPromoteStudent");
+const btnGraduateStudent = document.getElementById("btnGraduateStudent");
+const promoteModal = document.getElementById("promoteModal");
+const promoteTargetClass = document.getElementById("promoteTargetClass");
+const btnClosePromote = document.getElementById("btnClosePromote");
+const btnSubmitPromote = document.getElementById("btnSubmitPromote");
 
+let classList = [];
 // =============================
 // STATE
 // =============================
@@ -162,6 +182,8 @@ async function fetchClasses() {
     if (filterKelas) {
       filterKelas.innerHTML = "";
     }
+
+    classList = response.data;
 
     response.data.forEach((kelas, index) => {
       // modal
@@ -325,6 +347,163 @@ async function handleDelete(e) {
   }
 }
 
+btnDownloadTemplate.addEventListener("click", async () => {
+  try {
+    await downloadFile("api/admin/students/template", "template-siswa.xlsx");
+  } catch (error) {
+    Swal.fire("Error", error.message, "error");
+  }
+});
+
+btnImportStudent.addEventListener("click", () => {
+  importModal.classList.remove("hidden");
+  importModal.classList.add("flex");
+});
+
+btnCloseImport.addEventListener("click", () => {
+  importModal.classList.add("hidden");
+  importModal.classList.remove("flex");
+});
+
+btnSubmitImport.addEventListener("click", async () => {
+  const file = excelFile.files[0];
+
+  if (!file) {
+    Swal.fire("Error", "Pilih file excel dulu", "error");
+
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  try {
+    const result = await uploadFile("api/admin/students/import", formData);
+
+    let message = `
+      Berhasil: ${result.success_count}
+      <br>
+      Gagal: ${result.failed_count}
+    `;
+
+    if (result.failed_rows?.length) {
+      message += "<br><br>";
+
+      result.failed_rows.forEach((e) => {
+        message += `
+          Baris ${e.row}
+          - ${e.name}
+          (${e.nisn})
+          : ${e.reason}
+          <br>
+        `;
+      });
+    }
+
+    Swal.fire("Import selesai", message, "success");
+
+    importModal.classList.add("hidden");
+
+    fetchClasses();
+  } catch (error) {
+    Swal.fire("Error", error.message, "error");
+  }
+});
+
+// NAIK KELAS
+function loadPromoteClasses() {
+  promoteTargetClass.innerHTML = `
+<option value="">
+Pilih kelas tujuan
+</option>
+`;
+
+  classList.forEach((kelas) => {
+    promoteTargetClass.innerHTML += `
+<option value="${kelas.id}">
+${kelas.name}
+</option>
+`;
+  });
+}
+
+btnPromoteStudent.addEventListener("click", () => {
+  if (!currentFilterClassId) {
+    Swal.fire("Error", "Pilih kelas dulu", "error");
+
+    return;
+  }
+
+  loadPromoteClasses();
+
+  promoteModal.classList.remove("hidden");
+  promoteModal.classList.add("flex");
+});
+btnClosePromote.addEventListener("click", () => {
+  promoteModal.classList.add("hidden");
+  promoteModal.classList.remove("flex");
+});
+
+// SUBMIT NAIK KELAS
+btnSubmitPromote.addEventListener("click", async () => {
+  const to_class_id = promoteTargetClass.value;
+
+  if (!to_class_id) {
+    Swal.fire("Error", "Pilih kelas tujuan", "error");
+
+    return;
+  }
+
+  try {
+    const result = await postData("api/admin/students/promote-class", {
+      from_class_id: Number(currentFilterClassId),
+
+      to_class_id: Number(to_class_id),
+    });
+
+    Swal.fire("Berhasil", result.message, "success");
+
+    promoteModal.classList.add("hidden");
+
+    fetchClasses();
+  } catch (error) {
+    Swal.fire("Error", error.message, "error");
+  }
+});
+
+// LULUSKAN SISWA
+btnGraduateStudent.addEventListener("click", async () => {
+  if (!currentFilterClassId) {
+    Swal.fire("Error", "Pilih kelas dulu", "error");
+
+    return;
+  }
+
+  const confirm = await Swal.fire({
+    title: "Yakin meluluskan?",
+
+    text: "Semua siswa kelas ini akan diluluskan",
+
+    icon: "warning",
+
+    showCancelButton: true,
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const result = await postData("api/admin/students/graduate-class", {
+      class_id: Number(currentFilterClassId),
+    });
+
+    Swal.fire("Berhasil", result.message, "success");
+
+    fetchClasses();
+  } catch (error) {
+    Swal.fire("Error", error.message, "error");
+  }
+});
 // =============================
 // INIT
 // =============================
