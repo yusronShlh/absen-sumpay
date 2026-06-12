@@ -1,5 +1,11 @@
 import { getData, postData, putData, deleteData } from "./core/api.js";
 
+import { createTableSkeleton } from "./components/skeleton.js";
+
+function showTableLoading() {
+  tableBody.innerHTML = createTableSkeleton(8, 5);
+}
+
 // =========================
 // ELEMENT
 // =========================
@@ -69,6 +75,7 @@ function initEvents() {
 // LOAD DATA
 // =========================
 async function loadAssignments() {
+  showTableLoading();
   try {
     const response = await getData("api/admin/teaching-assignments");
 

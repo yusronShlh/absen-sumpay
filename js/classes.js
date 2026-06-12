@@ -1,4 +1,10 @@
 import { getData, postData, putData, deleteData } from "./core/api.js";
+import { createTableSkeleton } from "./components/skeleton.js";
+
+const tbody = document.getElementById("classTableBody");
+function showTableLoading() {
+  tbody.innerHTML = createTableSkeleton(8, 4);
+}
 
 let teachers = [];
 let classes = [];
@@ -18,6 +24,7 @@ async function fetchTeachers() {
 }
 
 async function fetchClasses() {
+  showTableLoading();
   try {
     const result = await getData("api/admin/classes");
 
@@ -34,7 +41,6 @@ async function fetchClasses() {
 // ===============================
 
 function renderTable() {
-  const tbody = document.getElementById("classTableBody");
   tbody.innerHTML = "";
 
   classes.forEach((cls, index) => {

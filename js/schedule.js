@@ -1,36 +1,27 @@
 import { getData, postData, putData, deleteData } from "./core/api.js";
+import { createTableSkeleton } from "./components/skeleton.js";
+
+function showTableLoading() {
+  tableBody.innerHTML = createTableSkeleton(4, 9);
+}
 
 // ===============================
 // ELEMENT
 // ===============================
 const filterKelas = document.getElementById("filterKelas");
-
 const tableBody = document.getElementById("scheduleTableBody");
-
 const modal = document.getElementById("scheduleModal");
-
 const modalTitle = document.getElementById("modalTitle");
-
 const scheduleForm = document.getElementById("scheduleForm");
-
 const btnDelete = document.getElementById("btnDelete");
-
 const btnCloseModal = document.getElementById("btnCloseModal");
-
-// select
 const daySelect = document.getElementById("daySelect");
-
 const teachingAssignmentSelect = document.getElementById(
   "teachingAssignmentSelect",
 );
-
 const lessonTimeSelect = document.getElementById("lessonTimeSelect");
-
-// info kelas
 const classInfo = document.getElementById("classInfo");
-
 const infoNamaKelas = document.getElementById("infoNamaKelas");
-
 const infoWaliKelas = document.getElementById("infoWaliKelas");
 
 // ===============================
@@ -146,6 +137,8 @@ function populateFilterClass() {
 // LOAD SCHEDULES
 // ===============================
 async function loadSchedulesByClass(classId) {
+  showTableLoading();
+
   try {
     const response = await getData(`api/admin/schedules?class_id=${classId}`);
 

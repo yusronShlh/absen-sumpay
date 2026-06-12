@@ -1,4 +1,9 @@
 import { getData, postData, putData, deleteData } from "./core/api.js";
+import { createTableSkeleton } from "./components/skeleton.js";
+
+function showTableLoading() {
+  tableBody.innerHTML = createTableSkeleton(8, 6);
+}
 
 const tableBody = document.getElementById("tableSemesterBody");
 
@@ -24,6 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // ================= LOAD TABLE =================
 async function loadSemesters() {
+  showTableLoading();
   try {
     const res = await getData("api/admin/semesters");
 

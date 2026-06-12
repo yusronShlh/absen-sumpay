@@ -1,4 +1,9 @@
 import { getData, postData, putData, deleteData } from "./core/api.js";
+import { createTableSkeleton } from "./components/skeleton.js";
+
+function showTableLoading() {
+  tableBody.innerHTML = createTableSkeleton(8, 4);
+}
 
 const tableBody = document.getElementById("lessonTimeTableBody");
 const btnAddLessonTime = document.getElementById("btnAddLessonTime");
@@ -15,6 +20,7 @@ document.addEventListener("DOMContentLoaded", loadLessonTimes);
 // FETCH
 // =============================
 async function loadLessonTimes() {
+  showTableLoading();
   try {
     lessonTimes = await getData("api/admin/lesson-times");
 

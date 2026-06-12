@@ -1,4 +1,9 @@
 import { getData, postData, putData, deleteData } from "./core/api.js";
+import { createTableSkeleton } from "./components/skeleton.js";
+
+function showTableLoading() {
+  tableBody.innerHTML = createTableSkeleton(8, 3);
+}
 
 const tableBody = document.getElementById("subjectTableBody");
 const btnAddSubject = document.getElementById("btnAddSubject"); // sesuai HTML kamu
@@ -19,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ============================
 
 async function loadSubjects() {
+  showTableLoading();
   try {
     subjects = await getData("api/admin/subjects");
     renderTable(subjects);

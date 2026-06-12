@@ -86,6 +86,7 @@
     --radius-xl: 0.75rem;
     --radius-2xl: 1rem;
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     --blur-sm: 8px;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -389,6 +390,12 @@
   .table {
     display: table;
   }
+  .h-1 {
+    height: calc(var(--spacing) * 1);
+  }
+  .h-3 {
+    height: calc(var(--spacing) * 3);
+  }
   .h-4 {
     height: calc(var(--spacing) * 4);
   }
@@ -422,6 +429,12 @@
   .min-h-screen {
     min-height: 100vh;
   }
+  .w-1 {
+    width: calc(var(--spacing) * 1);
+  }
+  .w-3 {
+    width: calc(var(--spacing) * 3);
+  }
   .w-4 {
     width: calc(var(--spacing) * 4);
   }
@@ -431,17 +444,8 @@
   .w-16 {
     width: calc(var(--spacing) * 16);
   }
-  .w-27 {
-    width: calc(var(--spacing) * 27);
-  }
-  .w-30 {
-    width: calc(var(--spacing) * 30);
-  }
   .w-33 {
     width: calc(var(--spacing) * 33);
-  }
-  .w-35 {
-    width: calc(var(--spacing) * 35);
   }
   .w-36 {
     width: calc(var(--spacing) * 36);
@@ -494,6 +498,12 @@
   .flex-1 {
     flex: 1;
   }
+  .flex-shrink {
+    flex-shrink: 1;
+  }
+  .shrink-0 {
+    flex-shrink: 0;
+  }
   .table-fixed {
     table-layout: fixed;
   }
@@ -525,6 +535,9 @@
   }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .animate-pulse {
+    animation: var(--animate-pulse);
   }
   .cursor-pointer {
     cursor: pointer;
@@ -689,15 +702,8 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
   }
-  .border-solid {
-    --tw-border-style: solid;
-    border-style: solid;
-  }
   .border-amber-200 {
     border-color: var(--color-amber-200);
-  }
-  .border-black {
-    border-color: var(--color-black);
   }
   .border-gray-100 {
     border-color: var(--color-gray-100);
@@ -1450,16 +1456,6 @@
       display: none;
     }
   }
-  .md\:h-auto {
-    @media (width >= 48rem) {
-      height: auto;
-    }
-  }
-  .md\:min-h-full {
-    @media (width >= 48rem) {
-      min-height: 100%;
-    }
-  }
   .md\:w-54 {
     @media (width >= 48rem) {
       width: calc(var(--spacing) * 54);
@@ -1808,6 +1804,11 @@
   syntax: "*";
   inherits: false;
   initial-value: 1;
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
 }
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {

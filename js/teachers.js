@@ -6,6 +6,11 @@ import {
   downloadFile,
   uploadFile,
 } from "./core/api.js";
+import { createTableSkeleton } from "./components/skeleton.js";
+
+function showTableLoading() {
+  tableBody.innerHTML = createTableSkeleton(8, 4);
+}
 
 const tableBody = document.getElementById("teacherTableBody");
 const modal = document.getElementById("teacherModal");
@@ -54,6 +59,7 @@ btnClose.addEventListener("click", closeModal);
 // FETCH
 // =============================
 async function fetchTeachers() {
+  showTableLoading();
   try {
     const response = await getData("api/admin/teachers");
     renderTable(response.teachers);

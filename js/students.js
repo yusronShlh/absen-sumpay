@@ -1,6 +1,7 @@
 // =============================
 // IMPORT API
 // =============================
+import { createTableSkeleton } from "./components/skeleton.js";
 import {
   getData,
   postData,
@@ -10,6 +11,9 @@ import {
   uploadFile,
 } from "./core/api.js";
 
+function showTableLoading() {
+  tableBody.innerHTML = createTableSkeleton(8, 5);
+}
 // =============================
 // ELEMENT
 // =============================
@@ -73,6 +77,7 @@ btnClose?.addEventListener("click", closeModal);
 // FETCH DATA STUDENTS
 // =============================
 async function fetchStudents(classId = "") {
+  showTableLoading();
   try {
     let endpoint = "api/admin/students";
 
