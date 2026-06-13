@@ -25,11 +25,18 @@ form.addEventListener("submit", async (e) => {
     localStorage.setItem("user", JSON.stringify(data.user));
 
     // redirect sesuai role
-    if (data.user.role === "admin") {
-      window.location.href = "../admin/dashboard.html";
-    } else {
-      errorMessage.textContent = "Role tidak di izinkan";
-      errorMessage.classList.remove("hidden");
+    switch (data.user.role) {
+      case "admin":
+        window.location.href = "../admin/dashboard.html";
+        break;
+
+      case "guru":
+        window.location.href = "../teacher/dashboard.html";
+        break;
+
+      default:
+        errorMessage.textContent = "Role tidak di izinkan";
+        errorMessage.classList.remove("hidden");
     }
   } catch (err) {
     errorMessage.textContent = err.message;

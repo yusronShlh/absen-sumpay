@@ -1,0 +1,114 @@
+<nav id="teacherNavbar" class="bg-white shadow-sm sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 md:px-6">
+    <div class="h-16 flex items-center justify-between">
+      <!-- LOGO -->
+      <div class="flex items-center gap-3">
+        <img src="../../assets/images/sumpayblack.png" class="w-12" />
+
+        <span class="font-bold text-[#1E3A5F]"> SUMPAY.Edu </span>
+      </div>
+
+      <!-- DESKTOP MENU -->
+      <div class="hidden md:flex items-center gap-2">
+        <a
+          href="./dashboard.html"
+          class="navbar-link px-4 py-2 rounded-lg hover:bg-slate-100"
+        >
+          Beranda
+        </a>
+
+        <a
+          href="./permission.html"
+          class="navbar-link px-4 py-2 rounded-lg hover:bg-slate-100"
+        >
+          Ajukan Izin
+        </a>
+
+        <a
+          href="./attendance.html"
+          class="navbar-link px-4 py-2 rounded-lg hover:bg-slate-100"
+        >
+          Absensi
+        </a>
+
+        <a
+          href="./recap.html"
+          class="navbar-link px-4 py-2 rounded-lg hover:bg-slate-100"
+        >
+          Rekapitulasi
+        </a>
+      </div>
+
+      <!-- USER -->
+      <div class="hidden md:block text-right">
+        <p id="navbarTeacherName" class="text-sm font-semibold text-[#1E3A5F]">
+          Guru
+        </p>
+
+        <p class="text-xs text-gray-500">Guru</p>
+      </div>
+
+      <!-- BUTTON -->
+      <button
+        id="navbarToggle"
+        class="md:hidden p-2 rounded-lg hover:bg-slate-100"
+      >
+        <i id="menuIcon" data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- OVERLAY -->
+
+<div
+  id="mobileOverlay"
+  class="fixed inset-0 bg-black/40 hidden z-40 md:hidden"
+></div>
+
+<!-- MOBILE DRAWER -->
+
+<div
+  id="mobileMenu"
+  class="fixed top-0 right-0 h-full w-64 bg-white z-50 translate-x-full transition-transform duration-300 md:hidden shadow-xl"
+>
+  <div class="p-5">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="font-bold text-[#1E3A5F]">Menu</h2>
+
+      <button id="closeMobileMenu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="space-y-2">
+      <a
+        href="./dashboard.html"
+        class="block px-4 py-3 rounded-lg hover:bg-slate-100"
+      >
+        Beranda
+      </a>
+
+      <a
+        href="./permission.html"
+        class="block px-4 py-3 rounded-lg hover:bg-slate-100"
+      >
+        Ajukan Izin
+      </a>
+
+      <a
+        href="./attendance.html"
+        class="block px-4 py-3 rounded-lg hover:bg-slate-100"
+      >
+        Absensi
+      </a>
+
+      <a
+        href="./recap.html"
+        class="block px-4 py-3 rounded-lg hover:bg-slate-100"
+      >
+        Rekapitulasi
+      </a>
+    </div>
+  </div>
+</div>

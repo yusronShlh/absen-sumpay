@@ -23,6 +23,10 @@ export async function getData(endpoint) {
     return;
   }
 
+  if (response.status === 403) {
+    throw new Error(result.message || "Akses ditolak");
+  }
+
   if (!response.ok) {
     throw new Error(result.message || "Terjadi kesalahan");
   }
@@ -44,6 +48,10 @@ export async function postData(endpoint, data) {
     return;
   }
 
+  if (response.status === 403) {
+    throw new Error(result.message || "Akses ditolak");
+  }
+
   if (!response.ok) {
     throw new Error(result.message || "Terjadi kesalahan");
   }
@@ -63,6 +71,11 @@ export async function putData(endpoint, data) {
     window.location.href = "/pages/auth/login.html";
     return;
   }
+
+  if (response.status === 403) {
+    throw new Error(result.message || "Akses ditolak");
+  }
+
   if (!response.ok) {
     throw new Error(result.message || "Terjadi kesalahan");
   }
@@ -82,6 +95,11 @@ export async function deleteData(endpoint) {
     window.location.href = "/pages/auth/login.html";
     return;
   }
+
+  if (response.status === 403) {
+    throw new Error(result.message || "Akses ditolak");
+  }
+
   if (!response.ok) {
     throw new Error(result.message || "Terjadi kesalahan");
   }
@@ -101,6 +119,10 @@ export async function downloadFile(endpoint, filename = "file.pdf") {
     localStorage.removeItem("token");
     window.location.href = "/pages/auth/login.html";
     return;
+  }
+
+  if (response.status === 403) {
+    throw new Error(result.message || "Akses ditolak");
   }
 
   if (!response.ok) {
@@ -134,6 +156,10 @@ export async function uploadFile(endpoint, formData) {
     localStorage.removeItem("token");
     window.location.href = "/pages/auth/login.html";
     return;
+  }
+
+  if (response.status === 403) {
+    throw new Error(result.message || "Akses ditolak");
   }
 
   if (!response.ok) {
