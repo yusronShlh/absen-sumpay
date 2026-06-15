@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Ajukan Izin Guru</title>
+
+    <link href="../../assets/css/output.css" rel="stylesheet" />
+  </head>
+
+  <body class="bg-gray-100 min-h-screen">
+    <!-- NAVBAR -->
+
+    <div id="navbar-container"></div>
+
+    <main class="p-4 md:p-6">
+      <section class="bg-white rounded-xl shadow p-5">
+        <h1 class="text-xl font-bold text-[#1E3A5F] mb-5">Permohonan Izin</h1>
+
+        <!-- DATE -->
+
+        <div class="flex items-end gap-2 md:gap-4">
+          <!-- START DATE -->
+
+          <div class="flex-1">
+            <label class="text-xs md:text-sm text-gray-600">
+              Pilih tanggal
+            </label>
+
+            <input
+              type="date"
+              id="startDate"
+              class="mt-2 w-full border rounded-lg px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A5F]/30"
+            />
+          </div>
+
+          <!-- PEMISAH -->
+
+          <div
+            class="flex items-center justify-center pb-2 text-gray-500 font-medium text-xs md:text-sm"
+          >
+            s/d
+          </div>
+
+          <!-- END DATE -->
+
+          <div class="flex-1">
+            <!-- <label class="text-xs md:text-sm text-gray-600">
+              Tanggal Selesai
+            </label> -->
+
+            <input
+              type="date"
+              id="endDate"
+              class="mt-2 w-full border rounded-lg px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[#1E3A5F]/30"
+            />
+          </div>
+        </div>
+
+        <!-- FULL DAY -->
+
+        <div id="fullDayBox" class="hidden mt-5 p-4 bg-slate-50 rounded-lg">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" id="fullDayCheck" class="w-5 h-5" />
+
+            <span> Izin 1 hari penuh </span>
+          </label>
+        </div>
+
+        <!-- SCHEDULE -->
+
+        <div id="scheduleBox" class="hidden mt-5">
+          <h2 class="font-semibold text-[#1E3A5F] mb-3">Pilih Mapel</h2>
+
+          <div id="scheduleList" class="grid grid-cols-2 gap-2 md:gap-3"></div>
+        </div>
+
+        <!-- REASON -->
+
+        <div class="mt-5">
+          <label class="text-sm text-gray-600"> Alasan Izin </label>
+
+          <textarea
+            id="reason"
+            rows="4"
+            class="mt-2 w-full border rounded-lg px-4 py-3"
+            placeholder="Contoh : karena berpergian / sedang sakit"
+          ></textarea>
+        </div>
+
+        <!-- FILE -->
+
+        <!-- FILE -->
+
+        <div class="mt-5">
+          <label class="text-sm text-gray-600"> Bukti Pendukung </label>
+
+          <label
+            for="attachment"
+            class="mt-2 flex flex-col items-center justify-center w-full min-h-[180px] md:min-h-[220px] border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:bg-slate-50 transition"
+          >
+            <div id="uploadIcon">
+              <img
+                src="../../assets/images/tambah foto_video.ico"
+                class="w-24 h-24 md:w-32 md:h-32 object-contain"
+                alt="Upload file"
+              />
+            </div>
+
+            <img
+              id="previewImage"
+              class="hidden w-32 h-32 object-cover rounded-lg mb-3"
+            />
+
+            <p id="fileName" class="text-sm text-gray-600 text-center">
+              Klik untuk upload bukti izin
+            </p>
+
+            <p id="fileInfo" class="text-xs text-gray-400 mt-1"></p>
+
+            <input
+              type="file"
+              id="attachment"
+              accept="image/*"
+              class="hidden"
+            />
+          </label>
+
+          <button id="removeFile" class="hidden mt-2 text-sm text-red-500">
+            Hapus file
+          </button>
+        </div>
+
+        <button
+          id="submitPermission"
+          class="mt-6 w-full bg-[#1E3A5F] text-white py-3 rounded-lg hover:opacity-90"
+        >
+          Ajukan Izin
+        </button>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../../js/teacher/permission.js"></script>
+  </body>
+</html>

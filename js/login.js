@@ -5,6 +5,9 @@ const errorMessage = document.getElementById("errorMessage");
 const passwordInput = document.getElementById("passwordInput");
 const togglePassword = document.getElementById("togglePassword");
 const eyeIcon = document.getElementById("eyeIcon");
+const loginButton = document.getElementById("loginButton");
+const loginText = document.getElementById("loginText");
+const loginSpinner = document.getElementById("loginSpinner");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -15,6 +18,10 @@ form.addEventListener("submit", async (e) => {
   const password = formData.get("password");
 
   errorMessage.classList.add("hidden");
+  loginButton.disabled = true;
+  loginText.textContent = "Memproses...";
+  loginSpinner.classList.remove("hidden");
+  loginButton.classList.add("opacity-70", "cursor-not-allowed");
 
   try {
     const data = await postData("api/auth/login", { identifier, password });
@@ -41,6 +48,10 @@ form.addEventListener("submit", async (e) => {
   } catch (err) {
     errorMessage.textContent = err.message;
     errorMessage.classList.remove("hidden");
+    loginButton.disabled = false;
+    loginText.textContent = "Masuk";
+    loginSpinner.classList.add("hidden");
+    loginButton.classList.remove("opacity-70", "cursor-not-allowed");
   }
 });
 

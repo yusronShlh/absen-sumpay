@@ -122,7 +122,7 @@ export async function downloadFile(endpoint, filename = "file.pdf") {
   }
 
   if (response.status === 403) {
-    throw new Error(result.message || "Akses ditolak");
+    throw new Error("Akses ditolak");
   }
 
   if (!response.ok) {

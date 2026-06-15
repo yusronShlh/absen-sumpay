@@ -72,7 +72,7 @@ function renderSchedule(schedules) {
        ${item.LessonTime.end_time.substring(0, 5)}`;
 
       return `
-      <tr class="border-b">
+      <tr >
 
         <td class="px-4 py-3">
           ${item.LessonTime.order}
@@ -166,44 +166,83 @@ function renderPermissions(data) {
 
   if (!data || data.length === 0) {
     container.innerHTML = `
-<p class="text-gray-400 text-sm">
-Belum ada izin
-</p>
-`;
+      <p class="text-gray-400 text-sm">
+        Belum ada izin
+      </p>
+    `;
 
     return;
   }
 
   container.innerHTML = data
     .map((item) => {
-      let status = "";
+      let statusText = "";
+      let statusClass = "";
 
       if (item.status === "approved") {
-        status = "Disetujui";
+        statusText = "Disetujui";
+
+        statusClass = "bg-emerald-100 text-emerald-700";
       } else if (item.status === "rejected") {
-        status = "Ditolak";
+        statusText = "Ditolak";
+
+        statusClass = "bg-red-100 text-red-700";
       } else {
-        status = "Menunggu";
+        statusText = "Menunggu";
+
+        statusClass = "bg-yellow-100 text-yellow-700";
       }
 
       return `
 
-<div class="p-3 rounded-lg bg-gray-50">
+      <div 
+        class="
+        p-4
+        rounded-xl
+        bg-slate-50
+        flex
+        items-center
+        justify-between
+        gap-3
+        "
+      >
 
-<p class="font-medium">
-${item.reason}
-</p>
+
+        <div>
+
+          <p class="font-medium text-[#1E3A5F]">
+            ${item.reason}
+          </p>
 
 
-<p class="text-sm text-gray-500">
-${item.start_date}
- - 
-${status}
-</p>
+          <p class="text-sm text-gray-500 mt-1">
+            ${item.start_date}
+          </p>
 
-</div>
 
-`;
+        </div>
+
+
+
+        <span
+          class="
+          px-3
+          py-1
+          rounded-full
+          text-xs
+          font-semibold
+          whitespace-nowrap
+          ${statusClass}
+          "
+        >
+          ${statusText}
+        </span>
+
+
+
+      </div>
+
+      `;
     })
     .join("");
 }
