@@ -1,19 +1,57 @@
 import { getData, downloadFile } from "./core/api.js";
 
-const semesterFilter = document.getElementById("filterPeriode");
+const periodeType = document.getElementById("periodeType");
+const semesterFilter = document.getElementById("filterSemester");
+const monthFilter = document.getElementById("filterMonth");
+const semesterWrapper = document.getElementById("semesterWrapper");
+const monthWrapper = document.getElementById("monthWrapper");
 const teacherFilter = document.getElementById("filterGuru");
 const btnTampilkan = document.getElementById("btnTampilkanData");
 const btnExportPDF = document.getElementById("btnExportPDF");
+let selectedType = "";
+
+let selectedMonth = {
+  month: "",
+  year: "",
+};
 
 const tableHead = document.querySelector("thead");
 const tableBody = document.getElementById("AdminAttendanceTableBody");
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadSemesters();
+  await loadPeriods();
 
   teacherFilter.innerHTML = `<option value="">Pilih guru</option>`;
   teacherFilter.disabled = true;
 });
+
+async function loadPeriods() {
+  try {
+    const result = await getData(
+      "api/admin/reports/teacher-attendance/periods",
+    );
+
+    monthFilter.innerHTML = `
+      <option value="">Pilih bulan</option>
+    `;
+
+    result.data.forEach((item) => {
+      monthFilter.innerHTML += `
+        <option 
+          value="${item.month}"
+          data-year="${item.year}"
+        >
+          ${item.label}
+        </option>
+      `;
+    });
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire("Error", "Gagal load periode", "error");
+  }
+}
 
 // ================= LOAD SEMESTER =================
 async function loadSemesters() {
@@ -37,41 +75,100 @@ async function loadSemesters() {
   }
 }
 
-// ================= LOAD GURU =================
-semesterFilter.addEventListener("change", async () => {
-  if (!semesterFilter.value) {
-    teacherFilter.innerHTML = `<option value="">Pilih guru</option>`;
-    teacherFilter.disabled = true;
-    return;
+periodeType.addEventListener("change", () => {
+  selectedType = periodeType.value;
+
+  semesterWrapper.classList.add("hidden");
+  monthWrapper.classList.add("hidden");
+
+  teacherFilter.disabled = true;
+  teacherFilter.innerHTML = `<option value="">Pilih guru</option>`;
+
+  selectedMonth = {
+    month: "",
+    year: "",
+  };
+
+  if (selectedType === "semester") {
+    semesterWrapper.classList.remove("hidden");
   }
 
-  // 🟢 kalau sudah pilih semester
-  teacherFilter.disabled = false;
+  if (selectedType === "month") {
+    monthWrapper.classList.remove("hidden");
+  }
+});
+
+// ================= LOAD GURU =================
+async function loadTeachers() {
+  let endpoint = "";
+
+  if (selectedType === "semester") {
+    if (!semesterFilter.value) return;
+
+    endpoint = `api/admin/reports/teacher-attendance/teachers?semester_id=${semesterFilter.value}`;
+  }
+
+  if (selectedType === "month") {
+    if (!selectedMonth.month || !selectedMonth.year) return;
+
+    endpoint = `api/admin/reports/teacher-attendance/teachers?month=${selectedMonth.month}&year=${selectedMonth.year}`;
+  }
 
   try {
-    const result = await getData(
-      `api/admin/reports/teacher-attendance/teachers?semester_id=${semesterFilter.value}`,
-    );
+    const result = await getData(endpoint);
 
     teacherFilter.innerHTML = `<option value="">Pilih guru</option>`;
 
     result.data.forEach((item) => {
       teacherFilter.innerHTML += `
-        <option value="${item.id}">
-          ${item.name}
-        </option>
-      `;
+ <option value="${item.id}">
+ ${item.name}
+ </option>
+ `;
     });
+
+    teacherFilter.disabled = false;
   } catch (error) {
     console.error(error);
+
     Swal.fire("Error", "Gagal load guru", "error");
   }
+}
+
+semesterFilter.addEventListener("change", loadTeachers);
+
+semesterFilter.addEventListener("change", loadTeachers);
+
+monthFilter.addEventListener("change", () => {
+  const selectedOption = monthFilter.options[monthFilter.selectedIndex];
+
+  selectedMonth.month = selectedOption.value;
+
+  selectedMonth.year = selectedOption.dataset.year;
+
+  loadTeachers();
 });
 
 // ================= FETCH DATA =================
 btnTampilkan.addEventListener("click", async () => {
-  if (!semesterFilter.value) {
+  // cek jenis periode
+  if (selectedType === "") {
+    Swal.fire("Warning", "Pilih jenis periode terlebih dahulu", "warning");
+    return;
+  }
+
+  // cek semester
+  if (selectedType === "semester" && !semesterFilter.value) {
     Swal.fire("Warning", "Pilih semester dulu", "warning");
+    return;
+  }
+
+  // cek bulan
+  if (
+    selectedType === "month" &&
+    (!selectedMonth.month || !selectedMonth.year)
+  ) {
+    Swal.fire("Warning", "Pilih bulan dulu", "warning");
     return;
   }
 
@@ -82,8 +179,19 @@ btnTampilkan.addEventListener("click", async () => {
       didOpen: () => Swal.showLoading(),
     });
 
-    let endpoint = `api/admin/reports/teacher-attendance?semester_id=${semesterFilter.value}`;
+    let endpoint = "api/admin/reports/teacher-attendance?";
 
+    // ================= SEMESTER =================
+    if (selectedType === "semester") {
+      endpoint += `semester_id=${semesterFilter.value}`;
+    }
+
+    // ================= BULAN =================
+    if (selectedType === "month") {
+      endpoint += `month=${selectedMonth.month}&year=${selectedMonth.year}`;
+    }
+
+    // ================= GURU =================
     if (teacherFilter.value) {
       endpoint += `&teacher_id=${teacherFilter.value}`;
     }
@@ -92,13 +200,17 @@ btnTampilkan.addEventListener("click", async () => {
 
     Swal.close();
 
+    // detail guru
     if (teacherFilter.value) {
       renderDetailGuru(result.data.data);
-    } else {
+    }
+    // semua guru
+    else {
       renderSummaryGuru(result.data);
     }
   } catch (error) {
     console.error(error);
+
     Swal.fire("Error", error.message, "error");
   }
 });
@@ -173,10 +285,26 @@ function renderDetailGuru(data) {
   });
 }
 
-// Download file pdf
+// ================= EXPORT PDF =================
 btnExportPDF.addEventListener("click", async () => {
-  if (!semesterFilter.value) {
+  // validasi periode
+  if (selectedType === "") {
+    Swal.fire("Warning", "Pilih jenis periode terlebih dahulu", "warning");
+    return;
+  }
+
+  // validasi semester
+  if (selectedType === "semester" && !semesterFilter.value) {
     Swal.fire("Warning", "Pilih semester dulu", "warning");
+    return;
+  }
+
+  // validasi bulan
+  if (
+    selectedType === "month" &&
+    (!selectedMonth.month || !selectedMonth.year)
+  ) {
+    Swal.fire("Warning", "Pilih bulan dan tahun dulu", "warning");
     return;
   }
 
@@ -187,8 +315,19 @@ btnExportPDF.addEventListener("click", async () => {
       didOpen: () => Swal.showLoading(),
     });
 
-    let endpoint = `api/admin/reports/teacher-attendance/export?semester_id=${semesterFilter.value}`;
+    let endpoint = "api/admin/reports/teacher-attendance/export?";
 
+    // ================= SEMESTER =================
+    if (selectedType === "semester") {
+      endpoint += `semester_id=${semesterFilter.value}`;
+    }
+
+    // ================= BULAN =================
+    if (selectedType === "month") {
+      endpoint += `month=${selectedMonth.month}&year=${selectedMonth.year}`;
+    }
+
+    // jika pilih guru
     if (teacherFilter.value) {
       endpoint += `&teacher_id=${teacherFilter.value}`;
     }
@@ -198,6 +337,7 @@ btnExportPDF.addEventListener("click", async () => {
     Swal.close();
   } catch (error) {
     console.error(error);
+
     Swal.fire("Error", error.message, "error");
   }
 });
