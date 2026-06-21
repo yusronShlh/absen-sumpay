@@ -1,184 +1,205 @@
 import { getData, downloadFile } from "./core/api.js";
 
 // ================= ELEMENT =================
+const periodeType = document.getElementById("periodeType");
+const semesterWrapper = document.getElementById("semesterWrapper");
+const monthWrapper = document.getElementById("monthWrapper");
 const semesterFilter = document.getElementById("filterSemester");
 const classFilter = document.getElementById("filterKelas");
+const monthFilter = document.getElementById("filterMonth");
 const subjectFilter = document.getElementById("filterMapel");
-
 const btnTampilkan = document.getElementById("btnTampilkanData");
 const btnExportPDF = document.getElementById("btnExportPDF");
-
 const tableHead = document.querySelector("thead");
 const tableBody = document.getElementById("AdminAttendanceTableBody");
+
+// ================= STATE =================
+let selectedType = "";
+let selectedMonth = {
+  month: "",
+  year: "",
+};
 
 // ================= INIT =================
 document.addEventListener("DOMContentLoaded", async () => {
   await loadSemesters();
   await loadClasses();
+  await loadPeriods();
 
-  classFilter.disabled = false; // 🔥 FIX PENTING
   resetSubjectFilter();
 });
 
-// ================= RESET MAPEL =================
-function resetSubjectFilter() {
-  subjectFilter.innerHTML = `
-    <option value="">Semua mapel</option>
-     subjectFilter.disabled = true;
-  `;
+// ================= LOAD PERIODS (BULAN) =================
+async function loadPeriods() {
+  try {
+    const result = await getData(
+      "api/admin/reports/student-attendance/periods",
+    );
 
-  subjectFilter.disabled = true;
+    monthFilter.innerHTML = `<option value="">Pilih bulan</option>`;
+
+    result.data.forEach((item) => {
+      monthFilter.innerHTML += `
+        <option value="${item.month}" data-year="${item.year}">
+          ${item.label}
+        </option>
+      `;
+    });
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", "Gagal load periode", "error");
+  }
+}
+
+// ================= RESET SUBJECT =================
+function resetSubjectFilter() {
+  subjectFilter.innerHTML = `<option value="">Semua mapel</option>`;
+  // subjectFilter.disabled = true;
 }
 
 // ================= LOAD SEMESTER =================
 async function loadSemesters() {
-  try {
-    const result = await getData(
-      "api/admin/reports/student-attendance/semesters",
-    );
+  const result = await getData(
+    "api/admin/reports/student-attendance/semesters",
+  );
 
-    semesterFilter.innerHTML = `
-      <option value="">Pilih semester</option>
+  semesterFilter.innerHTML = `<option value="">Pilih semester</option>`;
+
+  result.data.forEach((item) => {
+    semesterFilter.innerHTML += `
+      <option value="${item.id}">
+        ${item.name}
+      </option>
     `;
-
-    result.data.forEach((item) => {
-      semesterFilter.innerHTML += `
-        <option value="${item.id}">
-          ${item.name}
-        </option>
-      `;
-    });
-  } catch (error) {
-    console.error(error);
-
-    Swal.fire({
-      icon: "error",
-      title: "Gagal",
-      text: "Gagal load semester",
-    });
-  }
+  });
 }
 
 // ================= LOAD KELAS =================
 async function loadClasses() {
-  try {
-    const result = await getData(
-      "api/admin/reports/student-attendance/classes",
-    );
+  const result = await getData("api/admin/reports/student-attendance/classes");
 
-    classFilter.innerHTML = `
-      <option value="">Pilih kelas</option>
+  classFilter.innerHTML = `<option value="">Pilih kelas</option>`;
+
+  result.data.forEach((item) => {
+    classFilter.innerHTML += `
+      <option value="${item.id}">
+        ${item.name}
+      </option>
     `;
+  });
 
-    result.data.forEach((item) => {
-      classFilter.innerHTML += `
-        <option value="${item.id}">
-          ${item.name}
-        </option>
-      `;
-    });
-  } catch (error) {
-    console.error(error);
-
-    Swal.fire({
-      icon: "error",
-      title: "Gagal",
-      text: "Gagal load kelas",
-    });
-  }
+  classFilter.disabled = false;
 }
 
-// ================= LOAD MAPEL =================
+// ================= MODE SWITCH =================
+periodeType.addEventListener("change", () => {
+  selectedType = periodeType.value;
+
+  semesterWrapper.classList.add("hidden");
+  monthWrapper.classList.add("hidden");
+
+  semesterFilter.value = "";
+  monthFilter.value = "";
+  selectedMonth = { month: "", year: "" };
+
+  resetSubjectFilter();
+
+  if (selectedType === "semester") {
+    semesterWrapper.classList.remove("hidden");
+  }
+
+  if (selectedType === "month") {
+    monthWrapper.classList.remove("hidden");
+  }
+});
+
+// ================= MONTH SELECT =================
+monthFilter.addEventListener("change", () => {
+  const opt = monthFilter.options[monthFilter.selectedIndex];
+
+  selectedMonth.month = opt.value;
+  selectedMonth.year = opt.dataset.year;
+
+  loadSubjects();
+});
+
+// ================= LOAD SUBJECTS =================
 async function loadSubjects() {
-  if (!semesterFilter.value || !classFilter.value) {
-    resetSubjectFilter();
-    return;
+  if (!classFilter.value) return;
+
+  let endpoint = "";
+
+  if (selectedType === "semester") {
+    if (!semesterFilter.value) return;
+
+    endpoint = `api/admin/reports/student-attendance/subjects?semester_id=${semesterFilter.value}&class_id=${classFilter.value}`;
   }
 
-  try {
-    subjectFilter.disabled = true;
+  if (selectedType === "month") {
+    if (!selectedMonth.month || !selectedMonth.year) return;
 
-    const result = await getData(
-      `api/admin/reports/student-attendance/subjects?semester_id=${semesterFilter.value}&class_id=${classFilter.value}`,
-    );
+    endpoint = `api/admin/reports/student-attendance/subjects?month=${selectedMonth.month}&year=${selectedMonth.year}&class_id=${classFilter.value}`;
+  }
 
-    subjectFilter.innerHTML = `
-      <option value="">Semua mapel</option>
+  const result = await getData(endpoint);
+
+  subjectFilter.innerHTML = `<option value="">Semua mapel</option>`;
+
+  result.data.forEach((item) => {
+    subjectFilter.innerHTML += `
+      <option value="${item.subject_id}">
+        ${item.subject_name}
+      </option>
     `;
+  });
 
-    result.data.forEach((item) => {
-      subjectFilter.innerHTML += `
-        <option value="${item.subject_id}">
-          ${item.subject_name}
-        </option>
-      `;
-    });
-
-    subjectFilter.disabled = false;
-  } catch (error) {
-    console.error(error);
-
-    resetSubjectFilter();
-
-    Swal.fire({
-      icon: "error",
-      title: "Gagal",
-      text: "Gagal load mapel",
-    });
-  }
+  subjectFilter.disabled = false;
 }
 
-// ================= EVENT FILTER =================
-semesterFilter.addEventListener("change", async () => {
-  resetSubjectFilter();
-
-  if (semesterFilter.value && classFilter.value) {
-    await loadSubjects();
+// ================= LOAD ON CHANGE =================
+semesterFilter.addEventListener("change", loadSubjects);
+classFilter.addEventListener("change", () => {
+  if (selectedType) {
+    loadSubjects();
   }
 });
 
-classFilter.addEventListener("change", async () => {
-  resetSubjectFilter();
-
-  if (semesterFilter.value && classFilter.value) {
-    await loadSubjects();
-  }
-});
-
-// ================= FETCH DATA =================
+// ================= TAMPILKAN =================
 btnTampilkan.addEventListener("click", async () => {
-  if (!semesterFilter.value) {
-    Swal.fire({
-      icon: "warning",
-      title: "Warning",
-      text: "Pilih semester dulu",
-    });
-
+  if (!selectedType) {
+    Swal.fire("Warning", "Pilih jenis periode dulu", "warning");
     return;
   }
 
   if (!classFilter.value) {
-    Swal.fire({
-      icon: "warning",
-      title: "Warning",
-      text: "Pilih kelas dulu",
-    });
-
+    Swal.fire("Warning", "Pilih kelas dulu", "warning");
     return;
   }
 
   try {
-    Swal.fire({
-      title: "Memuat data...",
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading(),
-    });
+    Swal.fire({ title: "Loading...", didOpen: () => Swal.showLoading() });
 
-    let endpoint = `
-      api/admin/reports/student-attendance?semester_id=${semesterFilter.value}&class_id=${classFilter.value}
-    `.replace(/\s/g, "");
+    let endpoint = `api/admin/reports/student-attendance?class_id=${classFilter.value}`;
 
-    // jika pilih mapel tertentu
+    if (selectedType === "semester") {
+      if (!semesterFilter.value) {
+        Swal.fire("Warning", "Pilih semester", "warning");
+        return;
+      }
+
+      endpoint += `&semester_id=${semesterFilter.value}`;
+    }
+
+    if (selectedType === "month") {
+      if (!selectedMonth.month || !selectedMonth.year) {
+        Swal.fire("Warning", "Pilih bulan", "warning");
+        return;
+      }
+
+      endpoint += `&month=${selectedMonth.month}&year=${selectedMonth.year}`;
+    }
+
+    // subject
     if (subjectFilter.value) {
       endpoint += `&subject_id=${subjectFilter.value}`;
     }
@@ -187,7 +208,6 @@ btnTampilkan.addEventListener("click", async () => {
 
     Swal.close();
 
-    // render sesuai mode
     if (subjectFilter.value) {
       renderSingleSubject(result.data);
     } else {
@@ -195,12 +215,7 @@ btnTampilkan.addEventListener("click", async () => {
     }
   } catch (error) {
     console.error(error);
-
-    Swal.fire({
-      icon: "error",
-      title: "Gagal",
-      text: error.message,
-    });
+    Swal.fire("Error", error.message, "error");
   }
 });
 
@@ -359,13 +374,12 @@ function renderSingleSubject(data) {
 
 // ================= EXPORT PDF =================
 btnExportPDF.addEventListener("click", async () => {
-  if (!semesterFilter.value) {
+  if (!selectedType) {
     Swal.fire({
       icon: "warning",
       title: "Warning",
-      text: "Pilih semester dulu",
+      text: "Pilih jenis periode dulu",
     });
-
     return;
   }
 
@@ -379,6 +393,29 @@ btnExportPDF.addEventListener("click", async () => {
     return;
   }
 
+  if (selectedType === "semester" && !semesterFilter.value) {
+    Swal.fire({
+      icon: "warning",
+      title: "Warning",
+      text: "Pilih semester dulu",
+    });
+
+    return;
+  }
+
+  if (
+    selectedType === "month" &&
+    (!selectedMonth.month || !selectedMonth.year)
+  ) {
+    Swal.fire({
+      icon: "warning",
+      title: "Warning",
+      text: "Pilih bulan dulu",
+    });
+
+    return;
+  }
+
   try {
     Swal.fire({
       title: "Mengunduh PDF...",
@@ -386,26 +423,41 @@ btnExportPDF.addEventListener("click", async () => {
       didOpen: () => Swal.showLoading(),
     });
 
-    let endpoint = `
-      api/admin/reports/student-attendance/export?semester_id=${semesterFilter.value}&class_id=${classFilter.value}
-    `.replace(/\s/g, "");
+    let endpoint = "api/admin/reports/student-attendance/export?";
 
-    // jika pilih mapel tertentu
+    // ================= SEMESTER =================
+    if (selectedType === "semester") {
+      endpoint += `semester_id=${semesterFilter.value}&class_id=${classFilter.value}`;
+    }
+
+    // ================= BULAN =================
+    if (selectedType === "month") {
+      endpoint += `month=${selectedMonth.month}&year=${selectedMonth.year}&class_id=${classFilter.value}`;
+    }
+
+    // ================= SUBJECT =================
     if (subjectFilter.value) {
       endpoint += `&subject_id=${subjectFilter.value}`;
     }
 
-    const selectedSemester =
-      semesterFilter.options[semesterFilter.selectedIndex].text;
-
     const selectedClass = classFilter.options[classFilter.selectedIndex].text;
+
+    let periodName = "";
+
+    if (selectedType === "semester") {
+      periodName = semesterFilter.options[semesterFilter.selectedIndex].text;
+    }
+
+    if (selectedType === "month") {
+      periodName = monthFilter.options[monthFilter.selectedIndex].text;
+    }
 
     const selectedSubject =
       subjectFilter.options[subjectFilter.selectedIndex]?.text;
 
     const fileName = subjectFilter.value
-      ? `laporan-absensi-${selectedSemester}-${selectedClass}-${selectedSubject}.pdf`
-      : `laporan-absensi-${selectedSemester}-${selectedClass}.pdf`;
+      ? `laporan-absensi-${periodName}-${selectedClass}-${selectedSubject}.pdf`
+      : `laporan-absensi-${periodName}-${selectedClass}.pdf`;
 
     await downloadFile(endpoint, fileName);
 
