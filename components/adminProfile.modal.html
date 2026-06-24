@@ -1,0 +1,126 @@
+<div
+  id="adminProfileModal"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[100] p-4 transition-all duration-300"
+>
+  <div
+    class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-gray-100 transform scale-100 transition-all"
+  >
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h2 class="text-xl font-bold text-[#1E3A5F]">Profil Admin</h2>
+      </div>
+
+      <button
+        id="closeAdminProfile"
+        class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors duration-200 focus:outline-none"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label
+          class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+        >
+          Role
+        </label>
+        <input
+          id="adminName"
+          disabled
+          class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 bg-gray-50 text-gray-400 cursor-not-allowed font-medium text-sm"
+          value="Administrator"
+        />
+      </div>
+
+      <div>
+        <label
+          class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5"
+        >
+          Username
+        </label>
+        <input
+          id="adminUsername"
+          class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 focus:ring-2 focus:ring-[#1E3A5F]/20 focus:border-[#1E3A5F] focus:outline-none transition-all"
+          placeholder="Masukkan username"
+        />
+      </div>
+
+      <hr class="border-gray-100 my-2" />
+
+      <div>
+        <label
+          class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5"
+        >
+          Password Lama
+        </label>
+        <input
+          id="currentPassword"
+          type="password"
+          class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#1E3A5F]/20 focus:border-[#1E3A5F] focus:outline-none transition-all"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label
+            class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5"
+          >
+            Password Baru
+          </label>
+          <input
+            id="newPassword"
+            type="password"
+            class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#1E3A5F]/20 focus:border-[#1E3A5F] focus:outline-none transition-all"
+            placeholder="Minimal 8 karakter"
+          />
+        </div>
+
+        <div>
+          <label
+            class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1.5"
+          >
+            Konfirmasi
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-[#1E3A5F]/20 focus:border-[#1E3A5F] focus:outline-none transition-all"
+            placeholder="Ulangi password"
+          />
+        </div>
+      </div>
+
+      <button
+        id="saveAdminProfile"
+        class="w-full bg-[#1E3A5F] hover:bg-[#152944] text-white py-3 rounded-xl font-medium shadow-lg shadow-[#1E3A5F]/20 hover:shadow-xl hover:shadow-[#1E3A5F]/30 transition-all duration-200 mt-2 focus:ring-2 focus:ring-offset-2 focus:ring-[#1E3A5F] flex items-center justify-center gap-2"
+      >
+        <span id="saveText"> Simpan Perubahan </span>
+
+        <svg
+          id="saveLoader"
+          class="hidden animate-spin w-5 h-5"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { logout } from "../auth/logout.js";
 import { getData } from "../core/api.js";
+import { initAdminProfile } from "../adminProfile.js";
 
 export async function loadSidebar() {
   const container = document.getElementById("sidebar-container");
@@ -12,6 +13,8 @@ export async function loadSidebar() {
     }
 
     container.innerHTML = await response.text();
+
+    await loadAdminProfileModal();
 
     if (window.lucide) {
       window.lucide.createIcons();
@@ -74,6 +77,8 @@ function initSidebar() {
   setActiveMenu();
 
   autoOpenReportMenu();
+
+  initAdminProfile();
 }
 
 // =========================
@@ -168,4 +173,10 @@ function updateBadge(id, count) {
   } else {
     badge.classList.add("hidden");
   }
+}
+
+async function loadAdminProfileModal() {
+  const res = await fetch("../../components/adminProfile.modal.html");
+
+  document.body.insertAdjacentHTML("beforeend", await res.text());
 }

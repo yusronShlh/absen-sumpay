@@ -83,6 +83,32 @@ export async function putData(endpoint, data) {
   return result;
 }
 
+export async function patchData(endpoint, data) {
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    window.location.href = "/pages/auth/login.html";
+    return;
+  }
+
+  if (response.status === 403) {
+    throw new Error(result.message || "Akses ditolak");
+  }
+
+  if (!response.ok) {
+    throw new Error(result.message || "Terjadi kesalahan");
+  }
+
+  return result;
+}
+
 export async function deleteData(endpoint) {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: "DELETE",
