@@ -40,12 +40,26 @@
       </div>
 
       <!-- USER -->
-      <div class="hidden md:block text-right">
-        <p id="navbarTeacherName" class="text-sm font-semibold text-[#1E3A5F]">
-          Guru
-        </p>
+      <div class="hidden md:flex items-center gap-4">
+        <div class="text-right">
+          <p
+            id="navbarTeacherName"
+            class="text-sm font-semibold text-[#1E3A5F]"
+          >
+            Guru
+          </p>
 
-        <p class="text-xs text-gray-500">Guru</p>
+          <p class="text-xs text-gray-500">Guru</p>
+        </div>
+
+        <button
+          id="navbarLogoutBtn"
+          class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 transition"
+        >
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+
+          Logout
+        </button>
       </div>
 
       <!-- BUTTON -->
@@ -109,6 +123,14 @@
       >
         Rekapitulasi
       </a>
+      <button
+        id="mobileLogoutBtn"
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 text-red-600"
+      >
+        <i data-lucide="log-out" class="w-5 h-5"></i>
+
+        Logout
+      </button>
     </div>
   </div>
 </div>

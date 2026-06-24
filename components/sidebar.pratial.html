@@ -8,7 +8,7 @@
 <!-- SIDEBAR -->
 <aside
   id="sidebar"
-  class="fixed md:static top-0 left-0 h-screen z-50 w-64 bg-[#C3D9E6] text-[#1E3A5F] p-6 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
+  class="fixed md:static top-0 left-0 h-dvh z-50 w-64 bg-[#C3D9E6] text-[#1E3A5F] p-6 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out"
 >
   <!-- HEADER LOGO -->
   <div class="shrink-0 mb-6 text-center">
@@ -16,7 +16,7 @@
   </div>
 
   <nav
-    class="space-y-2 text-sm font-medium flex-1 overflow-y-auto scrollbar-hide"
+    class="space-y-2 text-sm font-medium flex-1 overflow-y-auto scrollbar-hide pb-6"
   >
     <a
       href="./dashboard.html"
@@ -107,18 +107,32 @@
 
     <a
       href="./studentsPermissions.html"
-      class="sidebar-link block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+      class="sidebar-link flex items-center justify-between px-4 py-2 rounded-lg hover:bg-white/70 transition"
       data-page="studentsPermissions"
     >
-      Approve Izin Siswa
+      <span> Approve Izin Siswa </span>
+
+      <span
+        id="studentPermissionBadge"
+        class="hidden bg-gray-400 text-white text-xs px-2 py-0.5 rounded-full"
+      >
+        0
+      </span>
     </a>
 
     <a
       href="./teacherPermissions.html"
-      class="sidebar-link block px-4 py-2 rounded-lg hover:bg-white/70 transition"
+      class="sidebar-link flex items-center justify-between px-4 py-2 rounded-lg hover:bg-white/70 transition"
       data-page="teacherPermissions"
     >
-      Approve Izin Guru
+      <span> Approve Izin Guru </span>
+
+      <span
+        id="teacherPermissionBadge"
+        class="hidden bg-gray-400 text-white text-xs px-2 py-0.5 rounded-full"
+      >
+        0
+      </span>
     </a>
 
     <div class="rounded-lg overflow-hidden">
@@ -159,7 +173,9 @@
     </div>
   </nav>
   <!-- BOTTOM MENU -->
-  <div class="mt-auto pt-4 border-t border-white/40">
+  <div
+    class="mt-auto pt-4 pb-[env(safe-area-inset-bottom)] border-t border-white/40"
+  >
     <button
       id="logoutBtn"
       class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/70 transition text-sm font-medium"

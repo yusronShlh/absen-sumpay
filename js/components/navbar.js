@@ -1,3 +1,5 @@
+import { logout } from "../auth/logout.js";
+
 export function initNavbar() {
   const toggle = document.getElementById("navbarToggle");
   const closeBtn = document.getElementById("closeMobileMenu");
@@ -50,6 +52,43 @@ export function initNavbar() {
   if (user && name) {
     name.textContent = user.name;
   }
+  // ======================
+  // LOGOUT
+  // ======================
+
+  const logoutBtn = document.getElementById("navbarLogoutBtn");
+
+  const mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
+
+  logoutBtn?.addEventListener("click", () => {
+    Swal.fire({
+      title: "Logout?",
+      text: "Anda akan keluar dari sistem",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, logout",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+      }
+    });
+  });
+
+  mobileLogoutBtn?.addEventListener("click", () => {
+    Swal.fire({
+      title: "Logout?",
+      text: "Anda akan keluar dari sistem",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, logout",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+      }
+    });
+  });
 
   lucide.createIcons();
 }

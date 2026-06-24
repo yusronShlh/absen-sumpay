@@ -1,4 +1,5 @@
 import { logout } from "../auth/logout.js";
+import { getData } from "../core/api.js";
 
 export async function loadSidebar() {
   const container = document.getElementById("sidebar-container");
@@ -68,6 +69,8 @@ function initSidebar() {
     });
   });
 
+  loadPermissionBadge();
+
   setActiveMenu();
 
   autoOpenReportMenu();
@@ -126,5 +129,43 @@ function autoOpenReportMenu() {
     const chevron = document.getElementById("reportChevron");
 
     openReportMenu(submenu, chevron);
+  }
+}
+
+async function loadPermissionBadge() {
+  console.log("load badge jalan");
+  try {
+    const [teacherResponse, studentResponse] = await Promise.all([
+      getData("api/admin/teacher-permissions"),
+      getData("api/admin/student-permissions"),
+    ]);
+
+    const teacherPending = teacherResponse.data.filter(
+      (item) => item.status === "pending",
+    ).length;
+
+    const studentPending = studentResponse.data.filter(
+      (item) => item.status === "pending",
+    ).length;
+
+    updateBadge("teacherPermissionBadge", teacherPending);
+
+    updateBadge("studentPermissionBadge", studentPending);
+  } catch (error) {
+    console.error("Gagal load badge permission", error);
+  }
+}
+
+function updateBadge(id, count) {
+  const badge = document.getElementById(id);
+
+  if (!badge) return;
+
+  if (count > 0) {
+    badge.textContent = count;
+
+    badge.classList.remove("hidden");
+  } else {
+    badge.classList.add("hidden");
   }
 }
