@@ -39,17 +39,50 @@ function openModal() {
 function closeModal() {
   modal.classList.add("hidden");
   modal.classList.remove("flex");
+
   form.reset();
+
   isEditMode = false;
   currentTeacherId = null;
+
   modalTitle.textContent = "Tambah Guru";
-  document.getElementById("password").required = false;
+
+  const password = document.getElementById("password");
+  const passwordHint = document.getElementById("passwordHint");
+
+  password.required = false;
+  password.disabled = false;
+  password.value = "";
+
+  password.classList.remove(
+    "bg-gray-100",
+    "cursor-not-allowed",
+    "text-gray-400",
+  );
+
+  passwordHint.classList.add("hidden");
 }
 
 btnAdd.addEventListener("click", () => {
   isEditMode = false;
+
   modalTitle.textContent = "Tambah Guru";
-  document.getElementById("password").required = true;
+
+  const password = document.getElementById("password");
+  const passwordHint = document.getElementById("passwordHint");
+
+  password.required = true;
+  password.disabled = false;
+  password.value = "";
+
+  password.classList.remove(
+    "bg-gray-100",
+    "cursor-not-allowed",
+    "text-gray-400",
+  );
+
+  passwordHint.classList.add("hidden");
+
   openModal();
 });
 
@@ -129,7 +162,16 @@ function handleEdit(e) {
   document.getElementById("name").value = button.dataset.name;
   document.getElementById("nip").value = button.dataset.nip;
 
-  document.getElementById("password").required = false;
+  const password = document.getElementById("password");
+  const passwordHint = document.getElementById("passwordHint");
+
+  password.required = false;
+  password.disabled = true;
+  password.value = "";
+
+  password.classList.add("bg-gray-100", "cursor-not-allowed", "text-gray-400");
+
+  passwordHint.classList.remove("hidden");
 
   openModal();
 }

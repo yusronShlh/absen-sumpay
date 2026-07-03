@@ -38,6 +38,8 @@ const promoteModal = document.getElementById("promoteModal");
 const promoteTargetClass = document.getElementById("promoteTargetClass");
 const btnClosePromote = document.getElementById("btnClosePromote");
 const btnSubmitPromote = document.getElementById("btnSubmitPromote");
+const passwordInput = document.getElementById("password");
+const passwordHint = document.getElementById("passwordHint");
 
 let classList = [];
 // =============================
@@ -58,16 +60,28 @@ function openModal() {
 function closeModal() {
   modal.classList.add("hidden");
   modal.classList.remove("flex");
+
   form.reset();
 
   isEditMode = false;
   currentStudentId = null;
+
   modalTitle.textContent = "Tambah Siswa";
+
+  passwordInput.disabled = false;
+  passwordInput.required = false;
+  passwordHint.classList.add("hidden");
 }
 
 btnAdd?.addEventListener("click", () => {
   isEditMode = false;
+
   modalTitle.textContent = "Tambah Siswa";
+
+  passwordInput.disabled = false;
+  passwordInput.required = true;
+  passwordHint.classList.add("hidden");
+
   openModal();
 });
 
@@ -166,7 +180,11 @@ function handleEdit(e) {
   document.getElementById("jenisKelamin").value = button.dataset.gender;
   document.getElementById("kelas").value = button.dataset.class;
 
-  document.getElementById("password").required = false;
+  passwordInput.value = "";
+  passwordInput.disabled = true;
+  passwordInput.required = false;
+
+  passwordHint.classList.remove("hidden");
 
   openModal();
 }
@@ -264,7 +282,7 @@ form?.addEventListener("submit", async function (e) {
     class_id: Number(class_id),
   };
 
-  if (password) {
+  if (!isEditMode && password) {
     payload.password = password;
   }
 

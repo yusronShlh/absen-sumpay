@@ -227,6 +227,8 @@ async function handleDetail(e) {
 
     const dateRange = formatDateRange(data.start_date, data.end_date);
 
+    const impactedSchedule = getImpactedScheduleHtml(data);
+
     detailContent.innerHTML = `
       <p><strong>Nama:</strong> ${data.teacher?.name || "-"}</p>
       <p><strong>NIP:</strong> ${data.teacher?.nip || "-"}</p>
@@ -247,26 +249,11 @@ async function handleDetail(e) {
   </div>
 
       <div class="mt-3">
-        <p class="font-semibold mb-1">Jadwal Terdampak:</p>
-        <ul class="list-disc ml-5 text-sm">
-          ${
-            data.details?.length
-              ? data.details
-                  .map(
-                    (d) => `
-              <li>
-                ${d.Schedule?.TeachingAssignment?.Subject?.name || "-"} 
-- ${d.Schedule?.TeachingAssignment?.Class?.name || "-"}
-                (${d.Schedule?.LessonTime?.start_time || "-"} - 
-                ${d.Schedule?.LessonTime?.end_time || "-"})
-              </li>
-            `,
-                  )
-                  .join("")
-              : "<li>-</li>"
-          }
-        </ul>
-      </div>
+  <p class="font-semibold mb-1">Jadwal Terdampak:</p>
+  <ul class="list-disc ml-5 text-sm">
+    ${impactedSchedule}
+  </ul>
+</div>
     `;
 
     detailModal.showModal();
@@ -350,4 +337,36 @@ function showLoading() {
 
 function showError(message) {
   Swal.fire("Error", message, "error");
+}
+
+function getImpactedScheduleHtml(data) {
+  if (data.is_full_day) {
+    if (data.start_date === data.end_date) {
+      return `<li>Semua jadwal pada ${formatDate(data.start_date)}</li>`;
+    }
+
+    return `
+      <li>
+        Semua jadwal dari ${formatDate(data.start_date)}
+        sampai ${formatDate(data.end_date)}
+      </li>
+    `;
+  }
+
+  if (!data.details?.length) {
+    return "<li>-</li>";
+  }
+
+  return data.details
+    .map(
+      (d) => `
+        <li>
+          ${d.Schedule?.TeachingAssignment?.Subject?.name || "-"}
+          - ${d.Schedule?.TeachingAssignment?.Class?.name || "-"}
+          (${d.Schedule?.LessonTime?.start_time || "-"} -
+          ${d.Schedule?.LessonTime?.end_time || "-"})
+        </li>
+      `,
+    )
+    .join("");
 }
