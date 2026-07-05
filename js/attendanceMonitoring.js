@@ -131,7 +131,7 @@ Tidak ada data
 <tr class="hover:bg-slate-50 transition">
 
 <td class="px-4 py-4">
-${item.lesson_time.order}
+${item.lesson_time.name}
 </td>
 
 <td class="px-6 py-4">

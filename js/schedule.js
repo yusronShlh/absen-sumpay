@@ -215,16 +215,27 @@ function renderTable() {
 
     // hari
     days.forEach((day) => {
+      const isBreak = lessonTime.type === "break";
       const found = schedules.find(
         (item) => item.day === day && item.lesson_time_id === lessonTime.id,
       );
 
-      let content = "+";
+      let content = isBreak
+        ? `
+      <span class="text-gray-400 italic">
+        Istirahat
+      </span>
+    `
+        : "+";
 
-      let dataset = `
-        data-day="${day}"
-        data-lesson-time-id="${lessonTime.id}"
-      `;
+      let dataset = "";
+
+      if (!isBreak) {
+        dataset = `
+      data-day="${day}"
+      data-lesson-time-id="${lessonTime.id}"
+  `;
+      }
 
       if (found) {
         const assignment = found.TeachingAssignment;
@@ -251,9 +262,18 @@ function renderTable() {
 
       row.innerHTML += `
         <td
-          class="px-4 py-4 text-center align-middle cursor-pointer hover:bg-[#C3D9E6]/40 transition"
-          ${dataset}
-        >
+class="
+px-4 py-4
+text-center
+align-middle
+${
+  isBreak
+    ? "bg-gray-100 text-gray-400 cursor-default"
+    : "cursor-pointer hover:bg-[#C3D9E6]/40 transition"
+}
+"
+${dataset}
+>
           ${content}
         </td>
       `;
