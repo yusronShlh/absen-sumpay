@@ -148,8 +148,6 @@ async function loadSchedulesByClass(classId) {
 
     renderTable();
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -418,8 +416,6 @@ async function handleSubmit(e) {
 
     await loadSchedulesByClass(currentClassId);
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -461,8 +457,6 @@ async function handleDelete() {
 
     await loadSchedulesByClass(currentClassId);
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",

@@ -83,8 +83,6 @@ async function loadAssignments() {
 
     renderTable();
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -101,8 +99,6 @@ async function loadOptions() {
 
     populateSelectOptions();
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal memuat data form",
@@ -340,8 +336,6 @@ async function handleSubmit(event) {
 
     await loadAssignments();
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -376,8 +370,6 @@ async function handleDelete(id) {
 
     await loadAssignments();
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",

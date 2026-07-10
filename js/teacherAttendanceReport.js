@@ -47,8 +47,6 @@ async function loadPeriods() {
       `;
     });
   } catch (error) {
-    console.error(error);
-
     Swal.fire("Error", "Gagal load periode", "error");
   }
 }
@@ -70,7 +68,6 @@ async function loadSemesters() {
       `;
     });
   } catch (error) {
-    console.error(error);
     Swal.fire("Error", "Gagal load semester", "error");
   }
 }
@@ -129,8 +126,6 @@ async function loadTeachers() {
 
     teacherFilter.disabled = false;
   } catch (error) {
-    console.error(error);
-
     Swal.fire("Error", "Gagal load guru", "error");
   }
 }
@@ -209,8 +204,6 @@ btnTampilkan.addEventListener("click", async () => {
       renderSummaryGuru(result.data);
     }
   } catch (error) {
-    console.error(error);
-
     Swal.fire("Error", error.message, "error");
   }
 });
@@ -336,8 +329,6 @@ btnExportPDF.addEventListener("click", async () => {
 
     Swal.close();
   } catch (error) {
-    console.error(error);
-
     Swal.fire("Error", error.message, "error");
   }
 });

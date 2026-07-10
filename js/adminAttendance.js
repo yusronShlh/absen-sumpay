@@ -76,8 +76,6 @@ async function loadClasses() {
       `;
     });
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -129,8 +127,6 @@ async function loadSchedules() {
 
     emptyTable("Silakan pilih jadwal.");
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -157,8 +153,6 @@ async function loadAttendance() {
 
     renderTable(result.data);
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -329,8 +323,6 @@ async function saveAttendance() {
 
     await loadAttendance();
   } catch (error) {
-    console.error(error);
-
     Swal.close();
 
     Swal.fire({

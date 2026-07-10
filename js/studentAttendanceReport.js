@@ -46,7 +46,6 @@ async function loadPeriods() {
       `;
     });
   } catch (error) {
-    console.error(error);
     Swal.fire("Error", "Gagal load periode", "error");
   }
 }
@@ -214,7 +213,6 @@ btnTampilkan.addEventListener("click", async () => {
       renderAllSubjects(result.data);
     }
   } catch (error) {
-    console.error(error);
     Swal.fire("Error", error.message, "error");
   }
 });
@@ -463,8 +461,6 @@ btnExportPDF.addEventListener("click", async () => {
 
     Swal.close();
   } catch (error) {
-    console.error(error);
-
     Swal.fire({
       icon: "error",
       title: "Gagal",

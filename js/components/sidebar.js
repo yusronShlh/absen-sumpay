@@ -138,7 +138,6 @@ function autoOpenReportMenu() {
 }
 
 async function loadPermissionBadge() {
-  console.log("load badge jalan");
   try {
     const [teacherResponse, studentResponse] = await Promise.all([
       getData("api/admin/teacher-permissions"),

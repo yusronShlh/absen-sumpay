@@ -54,6 +54,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       },
     });
   } catch (error) {
-    console.error("Dashboard error:", error);
+    // console.error("Dashboard error:", error);
+    // 1. Beri tahu user dengan SweetAlert
+    Swal.fire({
+      icon: "error",
+      title: "Gagal Memuat Dashboard",
+      text: "Terjadi kesalahan saat mengambil data dashboard. Silakan muat ulang halaman.",
+      confirmButtonText: "Muat Ulang",
+    }).then((res) => {
+      if (res.isConfirmed) {
+        window.location.reload(); // Mudahkan user untuk refresh halaman
+      }
+    });
+
+    // 2. Tampilkan pesan error di dalam chart/card agar tidak terlihat kosong melompong
+    const chartContainer = document.getElementById("classChart")?.parentElement;
+    if (chartContainer) {
+      chartContainer.innerHTML = `<div class="text-center text-red-500 p-5">Gagal memuat grafik.</div>`;
+    }
+
+    // Ubah angka-angka card menjadi tanda tanya atau strip agar jelas bahwa data gagal dimuat
+    const elementsToReset = [
+      "totalStudents",
+      "maleStudents",
+      "femaleStudents",
+      "totalTeachers",
+      "todayStudentPermits",
+      "todayTeacherPermits",
+    ];
+    elementsToReset.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = "-";
+    });
   }
 });

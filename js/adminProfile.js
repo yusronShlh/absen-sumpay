@@ -30,9 +30,7 @@ async function loadProfile() {
     document.getElementById("adminName").value = admin.name;
 
     document.getElementById("adminUsername").value = admin.username;
-  } catch (err) {
-    console.error(err);
-  }
+  } catch (err) {}
 }
 
 async function updateProfile() {

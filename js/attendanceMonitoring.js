@@ -46,7 +46,6 @@ ${item.name}
 `;
     });
   } catch (error) {
-    console.error(error);
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -69,7 +68,6 @@ async function loadAttendanceMonitoring() {
 
     renderTable(result.data);
   } catch (error) {
-    console.error(error);
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -199,7 +197,6 @@ async function openAttendanceModal(scheduleId) {
     attendanceModal.classList.remove("hidden");
     attendanceModal.classList.add("flex");
   } catch (error) {
-    console.error(error);
     Swal.fire({
       icon: "error",
       title: "Gagal",
@@ -494,8 +491,6 @@ saveAttendanceBtn.addEventListener("click", async () => {
 
     loadAttendanceMonitoring();
   } catch (error) {
-    console.error(error);
-
     Swal.close();
 
     Swal.fire({

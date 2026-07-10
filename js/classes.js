@@ -16,10 +16,12 @@ async function fetchTeachers() {
     // Sesuaikan dengan response backend kamu
     // Kalau backend return { teachers: [...] }
     teachers = result.teachers || result.data || result;
-
-    console.log("Teachers loaded:", teachers);
   } catch (error) {
-    console.error("Gagal mengambil data guru:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Gagal Memuat Data",
+      text: "Gagal mengambil data guru. Silakan coba beberapa saat lagi.",
+    });
   }
 }
 
@@ -33,7 +35,11 @@ async function fetchClasses() {
 
     renderTable();
   } catch (error) {
-    console.error("Gagal mengambil data kelas:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Gagal Memuat Data",
+      text: "Gagal mengambil data kelas. Silakan coba beberapa saat lagi.",
+    });
   }
 }
 // ===============================
