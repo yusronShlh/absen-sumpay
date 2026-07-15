@@ -31,7 +31,7 @@ async function fetchClasses() {
     const result = await getData("api/admin/classes");
 
     // backend return { meta, classes }
-    classes = result.classes;
+    classes = result.classes?.rows || [];
 
     renderTable();
   } catch (error) {
