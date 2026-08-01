@@ -70,6 +70,13 @@ function closeModal() {
 
   passwordInput.disabled = false;
   passwordInput.required = false;
+  passwordInput.value = "";
+  passwordInput.classList.remove(
+    "bg-gray-100",
+    "cursor-not-allowed",
+    "text-gray-400",
+  );
+
   passwordHint.classList.add("hidden");
 }
 
@@ -80,6 +87,14 @@ btnAdd?.addEventListener("click", () => {
 
   passwordInput.disabled = false;
   passwordInput.required = true;
+  passwordInput.value = "";
+
+  passwordInput.classList.remove(
+    "bg-gray-100",
+    "cursor-not-allowed",
+    "text-gray-400",
+  );
+
   passwordHint.classList.add("hidden");
 
   openModal();
@@ -181,8 +196,14 @@ function handleEdit(e) {
   document.getElementById("kelas").value = button.dataset.class;
 
   passwordInput.value = "";
-  passwordInput.disabled = true;
+  passwordInput.disabled = false;
   passwordInput.required = false;
+
+  passwordInput.classList.remove(
+    "bg-gray-100",
+    "cursor-not-allowed",
+    "text-gray-400",
+  );
 
   passwordHint.classList.remove("hidden");
 
@@ -282,7 +303,7 @@ form?.addEventListener("submit", async function (e) {
     class_id: Number(class_id),
   };
 
-  if (!isEditMode && password) {
+  if (password) {
     payload.password = password;
   }
 

@@ -112,10 +112,10 @@ function openModal(data = null) {
     try {
       if (editId) {
         await putData(`api/admin/subjects/${editId}`, result.value);
-        Swal.fire("Berhasil", "Mapel berhasil diperbarui", "success");
+        // Swal.fire("Berhasil", "Mapel berhasil diperbarui", "success");
       } else {
         await postData("api/admin/subjects", result.value);
-        Swal.fire("Berhasil", "Mapel berhasil ditambahkan", "success");
+        // Swal.fire("Berhasil", "Mapel berhasil ditambahkan", "success");
       }
 
       await loadSubjects();

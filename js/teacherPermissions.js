@@ -14,7 +14,11 @@ const closeDetailModal = document.getElementById("closeDetailModal");
 /* ===============================
    STATE
 ================================ */
-let permissions = [];
+let permissions = {
+  pending: [],
+  active: [],
+  recent: [],
+};
 let activeFilter = "all";
 
 /* ===============================
@@ -37,9 +41,11 @@ async function fetchPermissions() {
 
     const response = await getData("api/admin/teacher-permissions");
 
-    permissions = response.data || [];
-
-    permissions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    permissions = response.data || {
+      pending: [],
+      active: [],
+      recent: [],
+    };
 
     renderPermissions();
   } catch (error) {
@@ -53,10 +59,27 @@ async function fetchPermissions() {
 function renderPermissions() {
   permissionList.innerHTML = "";
 
-  let filtered = permissions;
+  let filtered = [];
 
-  if (activeFilter !== "all") {
-    filtered = permissions.filter((item) => item.status === activeFilter);
+  switch (activeFilter) {
+    case "pending":
+      filtered = permissions.pending;
+      break;
+
+    case "active":
+      filtered = permissions.active;
+      break;
+
+    case "recent":
+      filtered = permissions.recent;
+      break;
+
+    default:
+      filtered = [
+        ...permissions.pending,
+        ...permissions.active,
+        ...permissions.recent,
+      ];
   }
 
   permissionCount.textContent = `${filtered.length} Izin`;
@@ -174,7 +197,7 @@ async function handleApprove(e) {
   try {
     await putData(`api/admin/teacher-permissions/${id}/approve`);
 
-    updateLocalStatus(id, "approved");
+    await fetchPermissions();
 
     Swal.fire("Berhasil!", "Izin disetujui.", "success");
   } catch (error) {
@@ -197,22 +220,11 @@ async function handleReject(e) {
   try {
     await putData(`api/admin/teacher-permissions/${id}/reject`);
 
-    updateLocalStatus(id, "rejected");
+    await fetchPermissions();
 
     Swal.fire("Berhasil!", "Izin ditolak.", "success");
   } catch (error) {
     showError(error.message);
-  }
-}
-
-/* ===============================
-   UPDATE STATE
-================================ */
-function updateLocalStatus(id, newStatus) {
-  const index = permissions.findIndex((p) => p.id == id);
-  if (index !== -1) {
-    permissions[index].status = newStatus;
-    renderPermissions();
   }
 }
 

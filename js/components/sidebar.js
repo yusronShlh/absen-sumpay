@@ -144,13 +144,9 @@ async function loadPermissionBadge() {
       getData("api/admin/student-permissions"),
     ]);
 
-    const teacherPending = teacherResponse.data.filter(
-      (item) => item.status === "pending",
-    ).length;
+    const teacherPending = teacherResponse.data.pending?.length || 0;
 
-    const studentPending = studentResponse.data.filter(
-      (item) => item.status === "pending",
-    ).length;
+    const studentPending = studentResponse.data.pending?.length || 0;
 
     updateBadge("teacherPermissionBadge", teacherPending);
 

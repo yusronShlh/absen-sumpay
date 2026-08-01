@@ -39,10 +39,24 @@ async function loadPermissions() {
 
     const response = await getData("api/admin/student-permissions");
 
-    permissions = (response.data || []).sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-    );
+    const grouped = response.data || {};
 
+    permissions = [
+      ...(grouped.pending || []).map((item) => ({
+        ...item,
+        category: "pending",
+      })),
+
+      ...(grouped.active || []).map((item) => ({
+        ...item,
+        category: "active",
+      })),
+
+      ...(grouped.recent || []).map((item) => ({
+        ...item,
+        category: "recent",
+      })),
+    ];
     renderPermissions();
   } catch (error) {
     showError(error.message);
@@ -86,7 +100,7 @@ function renderPermissions() {
           </p>
         </div>
 
-        ${renderStatusBadge(item.status)}
+        ${renderStatusBadge(item)}
       </div>
 
       <p class="text-sm text-gray-600 line-clamp-2">
@@ -153,8 +167,11 @@ function initFilter() {
 }
 
 function getFilteredPermissions() {
-  if (currentFilter === "all") return permissions;
-  return permissions.filter((item) => item.status === currentFilter);
+  if (currentFilter === "all") {
+    return permissions;
+  }
+
+  return permissions.filter((item) => item.category === currentFilter);
 }
 
 /* ==============================
@@ -275,22 +292,35 @@ async function handleReject(id) {
 /* ==============================
    UTILITIES
 ============================== */
-function renderStatusBadge(status) {
+function renderStatusBadge(item) {
   const config = {
-    pending: "bg-yellow-100 text-yellow-600",
-    approved: "bg-green-100 text-green-600",
-    rejected: "bg-red-100 text-red-600",
+    pending: {
+      text: "Menunggu",
+      class: "bg-yellow-100 text-yellow-700",
+    },
+
+    active: {
+      text: "Aktif",
+      class: "bg-green-100 text-green-700",
+    },
+
+    recent: {
+      text: "7 Hari Terakhir",
+      class: "bg-blue-100 text-blue-700",
+    },
+  };
+
+  const badge = config[item.category] || {
+    text: capitalize(item.status),
+    class: "bg-gray-100 text-gray-600",
   };
 
   return `
-    <span class="text-xs px-2 py-1 rounded-full ${
-      config[status] || "bg-gray-100 text-gray-600"
-    }">
-      ${capitalize(status)}
+    <span class="text-xs px-2 py-1 rounded-full ${badge.class}">
+      ${badge.text}
     </span>
   `;
 }
-
 function formatDate(dateString) {
   if (!dateString) return "-";
   return new Date(dateString).toLocaleDateString("id-ID", {

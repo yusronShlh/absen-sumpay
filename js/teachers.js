@@ -166,10 +166,14 @@ function handleEdit(e) {
   const passwordHint = document.getElementById("passwordHint");
 
   password.required = false;
-  password.disabled = true;
+  password.disabled = false;
   password.value = "";
 
-  password.classList.add("bg-gray-100", "cursor-not-allowed", "text-gray-400");
+  password.classList.remove(
+    "bg-gray-100",
+    "cursor-not-allowed",
+    "text-gray-400",
+  );
 
   passwordHint.classList.remove("hidden");
 
